@@ -1,28 +1,21 @@
 import {
-  IonButton,
-  IonButtons,
-  IonContent,
-  IonHeader,
-  IonIcon,
-  IonLabel,
-  IonMenu,
-  IonMenuToggle,
-  IonPage,
-  IonRouterOutlet,
-  IonSplitPane,
-  IonTabBar,
-  IonTabButton,
-  IonTabs,
-  IonTitle,
-  IonToolbar,
+	IonContent,
+	IonIcon,
+	IonLabel,
+	IonRouterOutlet,
+	IonSplitPane,
+	IonTabBar,
+	IonTabButton,
+	IonTabs,
 } from "@ionic/react";
 
-import { accessibilitySharp, mapSharp, menuSharp } from "ionicons/icons";
+import { chatbox, mapSharp } from "ionicons/icons";
 
 import { Redirect, Route } from "react-router";
 import { ToastContainer } from "react-toastify";
 
 import MapPage from "./Map/Map";
+import ChatPage from "./Chat/Chat";
 // import ProjectsPage from "./Projects/Projects";
 // import CommentatorPage from "./Commentator/Commentator";
 
@@ -41,51 +34,53 @@ const contentId = "main-content";
 const menuId = "end-menu";
 
 const Home: React.FC = () => {
-  // const dispatch = useAppDispatch();
+	// const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    // dispatch(fetchPixels());
-    // dispatch(fetchProjects());
-  }, []);
+	useEffect(() => {
+		// dispatch(fetchPixels());
+		// dispatch(fetchProjects());
+	}, []);
 
-  return (
-    <MenuProvider>
-      <IonSplitPane contentId={contentId} when="xl">
-        {/* <EndMenu contentId={contentId} menuId={menuId} /> */}
-        <IonContent fullscreen id={contentId}>
-          {/* <SmallEndMenu menuId={menuId} contentId={contentId} /> */}
-          <IonTabs>
-            <IonRouterOutlet>
-              {/*@ts-ignore*/}
-              <Redirect exact path="/" to="/map" />
-              {/*@ts-ignore*/}
-              <Route path="/map" component={MapPage} />
-              {/*@ts-ignore*/}
-              {/* <Route path="/projects" component={ProjectsPage} /> */}
-              {/*@ts-ignore*/}
-              {/* <Route path="/commentator" component={CommentatorPage} /> */}
-            </IonRouterOutlet>
-            <IonTabBar slot="bottom">
-              <IonTabButton tab="map" href="/map">
-                <IonIcon icon={mapSharp} />
-                <IonLabel>map</IonLabel>
-              </IonTabButton>
-              {/* <IonTabButton tab="projects" href="/projects">
-                <IonIcon icon={mapSharp} />
-                <IonLabel>ai projects</IonLabel>
-              </IonTabButton> */}
-              {/* <IonTabButton tab="commentator" href="/commentator">
+	return (
+		<MenuProvider>
+			<IonSplitPane contentId={contentId} when="xl">
+				{/* <EndMenu contentId={contentId} menuId={menuId} /> */}
+				<IonContent fullscreen id={contentId}>
+					{/* <SmallEndMenu menuId={menuId} contentId={contentId} /> */}
+					<IonTabs>
+						<IonRouterOutlet>
+							{/*@ts-ignore*/}
+							<Redirect exact path="/" to="/map" />
+							{/*@ts-ignore*/}
+							<Route path="/map" component={MapPage} />
+							{/*@ts-ignore*/}
+							<Route path="/chat" component={ChatPage} />
+							{/*@ts-ignore*/}
+							{/* <Route path="/projects" component={ProjectsPage} /> */}
+							{/*@ts-ignore*/}
+							{/* <Route path="/commentator" component={CommentatorPage} /> */}
+						</IonRouterOutlet>
+						<IonTabBar slot="bottom">
+							<IonTabButton tab="map" href="/map">
+								<IonIcon icon={mapSharp} />
+								<IonLabel>map</IonLabel>
+							</IonTabButton>
+							<IonTabButton tab="chat" href="/chat">
+								<IonIcon icon={chatbox} />
+								<IonLabel>Chat</IonLabel>
+							</IonTabButton>
+							{/* <IonTabButton tab="commentator" href="/commentator">
                 <IonIcon icon={accessibilitySharp} />
                 <IonLabel>ai commentator</IonLabel>
               </IonTabButton> */}
-            </IonTabBar>
-          </IonTabs>
-          <ToastContainer position="top-center" autoClose={5000} theme="dark" />
-          {/* <WatchEvents /> */}
-        </IonContent>
-      </IonSplitPane>
-    </MenuProvider>
-  );
+						</IonTabBar>
+					</IonTabs>
+					<ToastContainer position="top-center" autoClose={5000} theme="dark" />
+					{/* <WatchEvents /> */}
+				</IonContent>
+			</IonSplitPane>
+		</MenuProvider>
+	);
 };
 
 export default Home;
