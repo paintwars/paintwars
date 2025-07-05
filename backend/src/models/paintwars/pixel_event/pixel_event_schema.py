@@ -6,6 +6,7 @@ class PixelEventBase(BaseModel):
     hash: str
     pixel_id: int
     stake_amount: int
+    effective_stake_amount: int
     color: int
     owner: str
     timestamp: datetime
