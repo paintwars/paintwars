@@ -5,5 +5,7 @@ from src.core.config import config
 
 provider = AsyncWeb3(WebSocketProvider(config.RPC_URL))
 
+
 async def provider_connect():
     await provider.provider.connect()
+    print("Provider connected", config.RPC_URL, flush=True)

@@ -5,10 +5,11 @@ from pydantic_settings import BaseSettings
 
 env_file = str(Path(__file__).resolve().parent.parent.parent.parent / ".env")
 
+
 class Settings(BaseSettings):
     ENV: str = "dev"
     PROJECT_NAME: str = "paintwars"
-    
+
     API_PREFIX: str = "/api/v1"
 
     BACKEND_BASE_URL: str = "http://localhost"
@@ -20,6 +21,8 @@ class Settings(BaseSettings):
     RPC_URL: str = ""
 
     OPENAI_KEY: str = ""
+
+    CORS_ORIGINS: list[str] | str = []
 
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod
@@ -51,7 +54,6 @@ class Settings(BaseSettings):
         db = info.data.get("DB_NAME")
         return f"{scheme}://{user}:{password}@{host}:{port}/{db}"
 
-
     TOKEN_ADDRESS: str = ""
     PIXEL_STAKING_ADDRESS: str = ""
     PROJECT_FACTORY_ADDRESS: str = ""
@@ -59,3 +61,6 @@ class Settings(BaseSettings):
     class Config:
         # env_file = str(Path(__file__).resolve().parent.parent.parent.parent / ".env")
         case_sensitive = True
+
+
+config = Settings()
