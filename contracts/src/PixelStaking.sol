@@ -4,6 +4,17 @@ pragma solidity ^0.8.20;
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
+enum ActionType {
+    CHANGE_PIXEL,
+    APPLY_SPELL
+}
+enum SpellType {
+    FORTIFY,
+    SWAP,
+    SHUFFLE,
+    WEAKEN
+}
+
 /**
  * @title PixelStaking
  * @notice Lets users stake tokens on pixels in a 100×100 grid.
@@ -17,17 +28,6 @@ contract PixelStaking is Ownable {
     error NotPixelOwner();
     error ArrayLengthMismatch();
     error notEnoughInteractionsForSpell();
-
-    enum ActionType {
-        CHANGE_PIXEL,
-        APPLY_SPELL
-    }
-    enum SpellType {
-        FORTIFY,
-        SWAP,
-        SHUFFLE,
-        WEAKEN
-    }
 
     event PixelChanged(
         address staker,
@@ -88,12 +88,12 @@ contract PixelStaking is Ownable {
         return y * GRID_SIZE + x;
     }
 
-    function changePixel(
+    function _changePixel(
         uint16 pixelId,
         address token_address,
         uint256 amount,
         uint24 color
-    ) public validPixelId(pixelId) {
+    ) internal validPixelId(pixelId) {
         PixelData storage pixel = pixels[pixelId];
         address prevOwner = pixel.owner;
         uint256 prevStake = pixel.stakeAmount;
@@ -183,11 +183,11 @@ contract PixelStaking is Ownable {
         );
     }
 
-    function applySpell(
+    function _applySpell(
         SpellType spellType,
         uint16 pixelId,
         uint16 newPixelId
-    ) public validPixelId(pixelId) {
+    ) internal validPixelId(pixelId) {
         PixelData storage pixel = pixels[pixelId];
 
         uint16 nbrInteractions = interactions[msg.sender];
@@ -300,22 +300,6 @@ contract PixelStaking is Ownable {
                         );
                     }
                 }
-            }
-        }
-    }
-
-    function runActions(Action[] memory actions) public {
-        for (uint8 i = 0; i < actions.length; i++) {
-            Action memory action = actions[i];
-            if (action.actionType == ActionType.CHANGE_PIXEL) {
-                changePixel(
-                    action.pixelId,
-                    action.token_address,
-                    action.amount,
-                    action.color
-                );
-            } else {
-                applySpell(action.spellType, action.pixelId, action.newPixelId);
             }
         }
     }
