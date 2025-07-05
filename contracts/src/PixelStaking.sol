@@ -16,7 +16,13 @@ contract PixelStaking is Ownable {
     error InsufficientStakeAmount();
     error NotPixelOwner();
     error ArrayLengthMismatch();
+    error notEnoughInteractionsForSpell();
 
+    enum ActionType {
+        STAKE,
+        UNSTAKE,
+        APPLY_SPELL
+    }
     enum SpellType {
         FORTIFY,
         SWAP,
@@ -29,6 +35,7 @@ contract PixelStaking is Ownable {
         uint16 pixelId,
         uint24 color,
         uint256 amount,
+        uint256 effectiveAmount,
         address token_address
     );
 
@@ -39,8 +46,6 @@ contract PixelStaking is Ownable {
         uint16 swappedPixelId
     );
 
-    event SpellGained(address staker, SpellType);
-
     struct PixelData {
         address owner;
         uint24 color;
@@ -49,11 +54,20 @@ contract PixelStaking is Ownable {
         address token_address;
     }
 
+    struct Action {
+        uint16 pixelId;
+        ActionType actionType;
+        SpellType spellType;
+        uint24 color;
+        uint256 amount;
+        address token_address;
+    }
+
+    uint16 public constant SCALE = 1000;
     uint8 public constant GRID_SIZE = 100;
     uint16 public constant TOTAL_PIXELS = uint16(GRID_SIZE) * uint16(GRID_SIZE);
 
     mapping(uint16 => PixelData) public pixels;
-    mapping(address => bool) public tokenWhitelist;
     mapping(address => uint16) public interactions;
 
     modifier validPixelId(uint16 pixelId) {
@@ -65,54 +79,145 @@ contract PixelStaking is Ownable {
 
     constructor(address initialOwner) Ownable(initialOwner) {}
 
-    function whitelistToken(address _token) external onlyOwner {
-        tokenWhitelist[_token] = true;
-    }
-
-    function unwhitelistToken(address _token) external onlyOwner {
-        tokenWhitelist[_token] = false;
-    }
-
-    /**
-     * @notice Stake a single pixel by providing a higher stake than the current owner.
-     * @dev Refunds the previous owner's stake.
-     * @param pixelId   Which pixel to stake.
-     * @param amount    How many tokens to stake.
-     * @param color     The desired color for the pixel.
-     */
-    function stakePixel(
+    function changePixel(
         uint16 pixelId,
         address token_address,
         uint256 amount,
         uint24 color
-    ) external validPixelId(pixelId) {
+    ) public validPixelId(pixelId) {
         PixelData storage pixel = pixels[pixelId];
-        if (amount <= pixel.stakeAmount) {
+        address prevOwner = pixel.owner;
+        uint256 prevStake = pixel.stakeAmount;
+        uint256 prevEffectiveStake = pixel.effectiveStakeAmount;
+        address prevToken = pixel.token_address;
+        uint16 prevColor = pixel.color;
+
+        if (prevOwner == msg.sender) {
+            // same user
+            if (amount == 0) {
+                // unstake
+                pixel.owner = address(0);
+                pixel.stakeAmount = 0;
+                pixel.effectiveStakeAmount = 0;
+                pixel.color = 0;
+                pixel.token_address = address(0);
+
+                // return tokens
+                IERC20(prevToken).transfer(msg.sender, prevStake);
+
+                emit PixelChanged(msg.sender, pixelId, 0, 0, 0, address(0));
+                return;
+            }
+            uint256 factor = (prevStake * SCALE) / prevEffectiveStake;
+            uint256 newEffectiveStakeAmount = (amount * factor) / SCALE;
+            if (amount != prevStake) {
+                // changing of stake amount
+                if (amount > prevStake) {
+                    uint256 delta = amount - prevStake;
+                    IERC20(prevToken).transferFrom(
+                        msg.sender,
+                        address(this),
+                        delta
+                    );
+                    pixel.stakeAmount = amount;
+                    pixel.effectiveStakeAmount = (amount * factor) / SCALE;
+                } else if (amount < prevStake) {
+                    uint256 delta = prevStake - amount;
+                    pixel.stakeAmount = amount;
+                    pixel.effectiveStakeAmount = (amount * factor) / SCALE;
+                    IERC20(prevToken).transfer(msg.sender, delta);
+                }
+            }
+            if (prevColor != color) {
+                pixel.color = color;
+            }
+            emit PixelChanged(
+                msg.sender,
+                pixelId,
+                color,
+                amount,
+                newEffectiveStakeAmount,
+                prevToken
+            );
+            return;
+        }
+
+        if (amount <= pixel.effectiveStakeAmount) {
             revert InsufficientStakeAmount();
         }
 
         // Transfer the new stake in
-        IERC20(pixel.token_address).transferFrom(
-            msg.sender,
-            address(this),
-            amount
-        );
+        IERC20(token_address).transferFrom(msg.sender, address(this), amount);
 
         // Refund old owner, if any
-        address previousOwner = pixel.owner;
-        uint256 previousAmount = pixel.stakeAmount;
-        if (previousOwner != address(0) && previousAmount > 0) {
-            IERC20(token_address).transfer(previousOwner, previousAmount);
+        if (prevOwner != address(0) && prevStake > 0) {
+            IERC20(token_address).transfer(prevOwner, prevStake);
         }
 
         // Update pixel ownership
         pixel.owner = msg.sender;
         pixel.stakeAmount = amount;
+        pixel.effectiveStakeAmount = amount;
         pixel.color = color;
         pixel.token_address = token_address;
 
-        emit PixelStaked(msg.sender, pixelId, amount, color);
+        uint16 nbrInteractions = interactions[msg.sender];
+        interactions[msg.sender] = nbrInteractions + 1;
+
+        emit PixelChanged(
+            msg.sender,
+            pixelId,
+            color,
+            amount,
+            amount,
+            token_address
+        );
     }
+
+    function applySpell(
+        SpellType spellType,
+        uint16 pixelId,
+        uint16 newPixelId
+    ) public validPixelId(pixelId) {
+        PixelData storage pixel = pixels[pixelId];
+
+        uint16 nbrInteractions = interactions[msg.sender];
+        if (nbrInteractions < 10) {
+            revert notEnoughInteractionsForSpell();
+            interactions[msg.sender] = nbrInteractions - 10;
+        }
+
+        if (spellType == SpellType.FORTIFY) {
+            pixel.effectiveStakeAmount = pixel.stakeAmount * 2;
+        } else if (spellType == SpellType.WEAKEN) {
+            pixel.effectiveStakeAmount = pixel.stakeAmount / 2;
+        } else if (spellType == SpellType.SWAP) {
+            PixelData memory newPixel = pixels[newPixelId];
+            pixels[pixelId] = newPixel;
+            pixels[newPixelId] = pixel;
+        } else if (spellType == SpellType.SHUFFLE) {
+            PixelData memory newPixel = pixels[newPixelId];
+            pixels[pixelId] = newPixel;
+            pixels[newPixelId] = pixel;
+        }
+
+        uint256 newStake = calculateNewStake(spellType, pixel.stakeAmount);
+        require(newStake > pixel.stakeAmount, "Invalid spell");
+
+        pixel.stakeAmount = newStake;
+        pixel.effectiveStakeAmount = newStake;
+
+        emit PixelChanged(
+            msg.sender,
+            pixelId,
+            pixel.color,
+            newStake,
+            newStake,
+            pixel.token_address
+        );
+    }
+
+    function runActions(Action[] memory actions) {}
 
     /**
      * @notice Batch version of stakePixel, more gas efficient for multiple pixel updates.
@@ -204,23 +309,6 @@ contract PixelStaking is Ownable {
      * @notice Unstake (remove your stake) from a pixel you own.
      * @dev Resets the pixel to no owner, zero stake, and color = 0.
      */
-    function unstakePixel(uint16 pixelId) external validPixelId(pixelId) {
-        PixelData storage pixel = pixels[pixelId];
-        if (pixel.owner != msg.sender) {
-            revert NotPixelOwner();
-        }
-        uint256 amount = pixel.stakeAmount;
-
-        // Clear pixel data
-        pixel.owner = address(0);
-        pixel.stakeAmount = 0;
-        pixel.color = 0;
-
-        // Return staked tokens to the owner
-        stakingToken.transfer(msg.sender, amount);
-
-        emit PixelUnstaked(msg.sender, pixelId);
-    }
 
     function unstakePixels(uint16[] calldata pixelIds) external {
         uint256 totalRefund = 0;
