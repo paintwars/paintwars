@@ -1,12 +1,12 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-// import pixelsReducer from "$features/pixels/pixel.slice";
-import usersReducer from "../features/user/user.slice"
-// import pixelEventsReducer from "$features/pixels/pixelEvents.slice";
+import pixelsReducer from "$features/pixels/pixel.slice";
+import usersReducer from "../features/user/user.slice";
+import pixelEventsReducer from "$features/pixels/pixelEvents.slice";
 
 const rootReducer = combineReducers({
-  // pixels: pixelsReducer,
+  pixels: pixelsReducer,
   user: usersReducer,
-  // pixelEvents: pixelEventsReducer,
+  pixelEvents: pixelEventsReducer,
 });
 
 export const setupStore = (preloadedState?: RootState) => {

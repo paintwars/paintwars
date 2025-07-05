@@ -57,9 +57,9 @@ const Home: React.FC = () => {
           <IonTabs>
             <IonRouterOutlet>
               {/*@ts-ignore*/}
-              {/* <Redirect exact path="/" to="/map" /> */}
+              <Redirect exact path="/" to="/map" />
               {/*@ts-ignore*/}
-              {/* <Route path="/map" component={MapPage} /> */}
+              <Route path="/map" component={MapPage} />
               {/*@ts-ignore*/}
               {/* <Route path="/projects" component={ProjectsPage} /> */}
               {/*@ts-ignore*/}
