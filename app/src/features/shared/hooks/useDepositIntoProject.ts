@@ -8,7 +8,7 @@ import {
 } from "wagmi";
 import { CONTRACTS } from "./utils";
 import { toast } from "react-toastify";
-import ProjectABI from "$abis/Project.json";
+// import ProjectABI from "$abis/Project.json";
 
 type UseDepositIntoProjectProps = {
   projectAddress: Address | undefined;
@@ -70,7 +70,8 @@ export function useDepositIntoProject({
       try {
         await writeContractAsync({
           address: projectAddress,
-          abi: ProjectABI.abi,
+          // abi: ProjectABI.abi,
+          abi: [], // TODO
           functionName: "deposit",
           args: [parseEther(amount)],
         });

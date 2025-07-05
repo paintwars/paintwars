@@ -1,8 +1,9 @@
 import { memo } from "react";
 import "./ChoiceWheel.scss";
 import { useAppSelector } from "$store/hooks";
+import PieMenu, { Slice } from "react-pie-menu";
+
 const ChoiceWheel = () => {
-  return null;
   const show = useAppSelector(
     (state) => state.pixels.selectedPixel !== undefined
   );
@@ -11,16 +12,29 @@ const ChoiceWheel = () => {
 
   console.log(x, y);
   return (
-    <div
-      className={`radial-menu ${show ? "show" : ""}`}
-      style={{ top: y, left: x }}
+    <PieMenu
+      radius="100px"
+      centerRadius="20px"
+      centerX={`${Math.round(x ?? 0)}px`}
+      centerY={`${Math.round((y || 0) - 60)}px`}
     >
-      <button data-action="stake">🚩</button>
-      <button data-action="fortify">🛡️</button>
-      <button data-action="weaken">💥</button>
-      <button data-action="swap">🔁</button>
-      <button data-action="shuffle">🎲</button>
-    </div>
+      {/* Contents */}
+      <Slice>
+        <div>stake</div>
+      </Slice>
+      <Slice>
+        <div>fortify</div>
+      </Slice>
+      <Slice>
+        <div>weaken</div>
+      </Slice>
+      <Slice>
+        <div>swap</div>
+      </Slice>
+      <Slice>
+        <div>shuffle</div>
+      </Slice>
+    </PieMenu>
   );
 };
 
