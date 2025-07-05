@@ -16,20 +16,30 @@ export const fetchPixels = createAsyncThunk(
   async (_, thunkAPI): Promise<IPixelUpdate[]> => {
     const pixels = await server.getPixels();
     return pixels;
-  },
+  }
 );
+
+type SelectedPixel = {
+  pixelId: number | undefined;
+  clientX: number | undefined;
+  clientY: number | undefined;
+};
 
 export const setSelectedPixel = createAsyncThunk(
   "pixels/setSelected",
   async (
-    pixelId: number | undefined,
-    thunkAPI,
-  ): Promise<number | undefined> => {
+    { pixelId, clientX, clientY }: SelectedPixel,
+    thunkAPI
+  ): Promise<{
+    pixelId: number | undefined;
+    clientX: number | undefined;
+    clientY: number | undefined;
+  }> => {
     if (pixelId !== undefined) {
       thunkAPI.dispatch(fetchPixelEventsForPixelId(pixelId));
     }
-    return pixelId;
-  },
+    return { pixelId, clientX, clientY };
+  }
 );
 
 // Adapter
@@ -40,24 +50,26 @@ export const { selectAll: selectAllPixels, selectById: selectPixelById } =
   pixelAdapter.getSelectors((state: any) => state.pixels);
 
 export const selectTVL = createSelector(selectAllPixels, (pixels) =>
-  pixels.reduce((sum, pixel) => sum + (pixel.stakeAmount || 0), 0),
+  pixels.reduce((sum, pixel) => sum + (pixel.stakeAmount || 0), 0)
 );
 
 export const selectControlOfOwner = createSelector(
   [selectAllPixels, (state, owner: string) => owner],
-  (pixels, owner): number => pixels.filter((p) => p.owner == owner).length,
+  (pixels, owner): number => pixels.filter((p) => p.owner == owner).length
 );
 export const selectUsedOfOwner = createSelector(
   [selectAllPixels, (state, owner: string) => owner],
   (pixels, owner): number =>
     pixels
       .filter((p) => p.owner == owner)
-      .reduce((sum, pixel) => sum + (pixel.stakeAmount || 0), 0),
+      .reduce((sum, pixel) => sum + (pixel.stakeAmount || 0), 0)
 );
 
 type InitialState = {
   status: "loading" | "success" | "error" | "idle";
   selectedPixel: number | undefined;
+  selectedClientX?: number | undefined;
+  selectedClientY?: number | undefined;
 };
 const initialState = pixelAdapter.getInitialState<InitialState>({
   status: "idle",
@@ -74,7 +86,7 @@ export const pixelSlice = createSlice({
         action.payload.map((e) => ({
           id: e.id,
           changes: e,
-        })),
+        }))
       );
     },
   },
@@ -91,15 +103,18 @@ export const pixelSlice = createSlice({
         state.status = "success";
         pixelAdapter.updateMany(
           state,
-          action.payload.map((p) => ({ id: p.id, changes: p })),
+          action.payload.map((p) => ({ id: p.id, changes: p }))
         );
-      },
+      }
     );
     builder.addCase(
       setSelectedPixel.fulfilled,
-      (state, action: PayloadAction<number | undefined>) => {
-        state.selectedPixel = action.payload;
-      },
+      (state, action: PayloadAction<SelectedPixel>) => {
+        const { pixelId, clientX, clientY } = action.payload;
+        state.selectedPixel = pixelId;
+        state.selectedClientX = clientX;
+        state.selectedClientY = clientY;
+      }
     );
   },
 });

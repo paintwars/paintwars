@@ -1,0 +1,39 @@
+.radial-menu {
+  position: absolute;
+  pointer-events: none; /* only children receive clicks */
+  width: 0;
+  height: 0;
+  transform: scale(0);
+  transition: transform 0.3s ease-out;
+  z-index: 999;
+}
+.radial-menu.show {
+  transform: scale(1);
+}
+.radial-menu button {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+  /* center origin so translate + rotate works */
+  transform-origin: 20px 20px;
+}
+/* place 5 items evenly around */
+.radial-menu button:nth-child(1) {
+  transform: rotate(270deg) translate(60px) rotate(-270deg);
+}
+.radial-menu button:nth-child(2) {
+  transform: rotate(342deg) translate(60px) rotate(-342deg);
+}
+.radial-menu button:nth-child(3) {
+  transform: rotate(54deg) translate(60px) rotate(-54deg);
+}
+.radial-menu button:nth-child(4) {
+  transform: rotate(126deg) translate(60px) rotate(-126deg);
+}
+.radial-menu button:nth-child(5) {
+  transform: rotate(198deg) translate(60px) rotate(-198deg);
+}

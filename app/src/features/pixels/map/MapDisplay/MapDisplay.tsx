@@ -31,6 +31,7 @@ import { useCreateProject } from "$features/shared/hooks/useCreateProject";
 import { useDepositIntoProject } from "$features/shared/hooks/useDepositIntoProject";
 import StakeAmountPopover from "$features/pixels/modals/StakeAmountPopover/StakeAmountPopover";
 import Tooltip from "$features/shared/Tooltip/Tooltip";
+import ChoiceWheel from "$features/shared/ChoiceWheel/ChoiceWheel";
 // import ProjectButton from "$features/projects/modals/ProjectModal/ProjectButton";
 
 type Props = {};
@@ -211,7 +212,13 @@ const MapDisplay: React.FC<Props> = () => {
         layer.eventMode = "static";
         layer.cursor = "pointer";
         viewport.on("click", () => {
-          dispatch(setSelectedPixel(undefined));
+          dispatch(
+            setSelectedPixel({
+              clientX: undefined,
+              clientY: undefined,
+              pixelId: undefined,
+            })
+          );
         });
 
         viewport.addChild(layer);
@@ -319,12 +326,13 @@ const MapDisplay: React.FC<Props> = () => {
             <PixelDisplay key={id} id={id} layer={layerRef.current!} />
           ))}
           <GridDisplay layer={layerRef.current!} />
-          <IonFab vertical="bottom" horizontal="end" slot="fixed">
+          {/* <ChoiceWheel /> */}
+          {/* <IonFab vertical="bottom" horizontal="end" slot="fixed">
             <IonFabButton onClick={() => setShowModal(true)}>
               <IonIcon icon={image} />
             </IonFabButton>
-          </IonFab>
-          <ImageModal isOpen={showModal} onDidDismiss={onImageDismiss} />
+          </IonFab> */}
+          {/* <ImageModal isOpen={showModal} onDidDismiss={onImageDismiss} /> */}
           <IonModal
             className="deposit-modal"
             isOpen={!!address}
@@ -377,33 +385,6 @@ const MapDisplay: React.FC<Props> = () => {
               </IonToolbar>
             </IonFooter>
           </IonModal>
-
-          {loadingState === "error" && (
-            <div
-              style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                color: "red",
-              }}
-            >
-              Error loading map
-            </div>
-          )}
-          {loadingState === "initializing" && (
-            <div
-              style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                color: "white",
-              }}
-            >
-              Loading map...
-            </div>
-          )}
 
           <PixelDetails />
         </>

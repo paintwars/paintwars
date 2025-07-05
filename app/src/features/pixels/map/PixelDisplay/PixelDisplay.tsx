@@ -1,12 +1,13 @@
 import { useAppDispatch, useAppSelector } from "$store/hooks";
 import { Container, Graphics } from "pixi.js";
-import { memo, useEffect, useRef } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { BASE_PIXEL_SIZE, BORDER_SIZE } from "../MapDisplay/utils";
 import {
   selectPixelById,
   setSelectedPixel,
 } from "$features/pixels/pixel.slice";
 import { IPixel } from "$features/pixels/pixel.interface";
+import ChoiceWheel from "$features/shared/ChoiceWheel/ChoiceWheel";
 
 type GraphicsWithData = Graphics & {
   customData: any;
@@ -81,12 +82,24 @@ const PixelDisplay: React.FC<Props> = ({ id, layer }) => {
 
     px.on("click", (e) => {
       e.stopPropagation();
-      dispatch(setSelectedPixel(pixelRef.current.id));
+      dispatch(
+        setSelectedPixel({
+          pixelId: pixelRef.current.id,
+          clientX: e.clientX,
+          clientY: e.clientY,
+        })
+      );
     });
 
     px.on("touchstart", (e) => {
       e.stopPropagation();
-      dispatch(setSelectedPixel(pixelRef.current.id));
+      dispatch(
+        setSelectedPixel({
+          pixelId: pixelRef.current.id,
+          clientX: e.clientX,
+          clientY: e.clientY,
+        })
+      );
     });
 
     px.on("pointerover", () => {
