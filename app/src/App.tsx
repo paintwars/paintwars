@@ -58,7 +58,7 @@ const App: React.FC = () => (
           <div id="toolbar">
             <div className="logo hide-md">
               <div id="logo-text">
-                <span>PaintWars</span>
+                <span>paintwars</span>
               </div>
             </div>
           </div>

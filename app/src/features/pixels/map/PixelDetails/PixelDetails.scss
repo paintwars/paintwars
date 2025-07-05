@@ -106,37 +106,37 @@ ion-modal.modal-default {
         flex: 1;
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-start;
         color: var(--color-dark);
         .color-blocks {
           display: flex;
           justify-content: space-between;
           ion-button {
             min-height: 0px;
-            height: 25px;
-            --padding-top: 2px;
-            --padding-bottom: 2px;
+            height: 12px;
+            --padding-top: 0px;
+            --padding-bottom: 0px;
           }
           .color-block {
-            width: 15px;
-            height: 15px;
-            background-color: black;
-            opacity: 0.7;
+            width: 12px;
+            height: 12px;
+            background-color: var(--default-pixel-color);
           }
         }
         .info {
           padding: 2px;
           display: flex;
+          flex-wrap: wrap;
           .info-title {
             flex: 1;
-            color: var(--color-dark);
-            .title-value {
-              flex: 1;
-            }
+            color: #f1e6db;
+          }
+          .info-separator {
+            color: #f1e6db;
           }
           .info-value {
             flex: 2;
-            color: var(--ion-color-primary);
+            color: #f1e6db;
             display: flex;
             justify-content: end;
             align-items: center;
@@ -249,16 +249,16 @@ ion-modal.modal-default {
         .color-blocks {
           display: flex;
           justify-content: space-between;
-          ion-button {
-            min-height: 0px;
-            height: 25px;
-            --padding-top: 2px;
-            --padding-bottom: 2px;
-          }
+          // ion-button {
+          //   min-height: 0px;
+          //   height: 25px;
+          //   --padding-top: 0px;
+          //   --padding-bottom: 0px;
+          // }
           .color-block {
             width: 15px;
             height: 15px;
-            background-color: black;
+            background-color: var(--default-pixel-color);
             opacity: 0.7;
           }
         }
@@ -267,7 +267,7 @@ ion-modal.modal-default {
           display: flex;
           .info-title {
             flex: 1;
-            color: var(--color-dark);
+            color: white;
             .title-value {
               flex: 1;
             }

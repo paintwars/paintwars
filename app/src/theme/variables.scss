@@ -5,7 +5,9 @@ ion-popover {
   /***************/
   /* NEW VARIABLES
   /***************/
-  // Canvas backdrop, main background
+  // Canvas backdrop
+  --default-pixel-color: 0xffffff;
+  // main background
   --background-color-light: var(--ion-color-light);
   // Toolbar panels, sidebars
   --background-color-medium: var(--ion-color-medium);
