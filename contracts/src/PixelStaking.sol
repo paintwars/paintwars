@@ -17,35 +17,44 @@ contract PixelStaking is Ownable {
     error NotPixelOwner();
     error ArrayLengthMismatch();
 
-    event PixelStaked(
+    enum SpellType {
+        FORTIFY,
+        SWAP,
+        SHUFFLE,
+        WEAKEN
+    }
+
+    event PixelChanged(
         address staker,
         uint16 pixelId,
+        uint24 color,
         uint256 amount,
-        uint24 color
+        address token_address
     );
-    event PixelsStaked(
+
+    event SpellApplied(
+        SpellType spell,
         address staker,
-        uint16[] pixelIds,
-        uint256[] amounts,
-        uint24[] colors
+        uint16 pixelId,
+        uint16 swappedPixelId
     );
-    event PixelUnstaked(address staker, uint16 pixelId);
-    event PixelsUnstaked(address staker, uint16[] pixelIds);
-    event PixelColorChanged(uint16 pixelId, uint24 color);
-    event PixelsColorChanged(uint16[] pixelIds, uint24[] colors);
+
+    event SpellGained(address staker, SpellType);
 
     struct PixelData {
         address owner;
         uint24 color;
         uint256 stakeAmount; // The amount staked to own this pixel
+        uint256 effectiveStakeAmount;
+        address token_address;
     }
 
-    IERC20 public immutable stakingToken;
     uint8 public constant GRID_SIZE = 100;
     uint16 public constant TOTAL_PIXELS = uint16(GRID_SIZE) * uint16(GRID_SIZE);
 
     mapping(uint16 => PixelData) public pixels;
     mapping(address => bool) public tokenWhitelist;
+    mapping(address => uint16) public interactions;
 
     modifier validPixelId(uint16 pixelId) {
         if (pixelId >= TOTAL_PIXELS) {
@@ -54,14 +63,7 @@ contract PixelStaking is Ownable {
         _;
     }
 
-    constructor(
-        IERC20 _stakingToken,
-        address initialOwner
-    ) Ownable(initialOwner) {
-        if (address(_stakingToken) == address(0))
-            revert InvalidToken(address(_stakingToken));
-        stakingToken = _stakingToken;
-    }
+    constructor(address initialOwner) Ownable(initialOwner) {}
 
     function whitelistToken(address _token) external onlyOwner {
         tokenWhitelist[_token] = true;
@@ -80,6 +82,7 @@ contract PixelStaking is Ownable {
      */
     function stakePixel(
         uint16 pixelId,
+        address token_address,
         uint256 amount,
         uint24 color
     ) external validPixelId(pixelId) {
@@ -89,19 +92,24 @@ contract PixelStaking is Ownable {
         }
 
         // Transfer the new stake in
-        stakingToken.transferFrom(msg.sender, address(this), amount);
+        IERC20(pixel.token_address).transferFrom(
+            msg.sender,
+            address(this),
+            amount
+        );
 
         // Refund old owner, if any
         address previousOwner = pixel.owner;
         uint256 previousAmount = pixel.stakeAmount;
         if (previousOwner != address(0) && previousAmount > 0) {
-            stakingToken.transfer(previousOwner, previousAmount);
+            IERC20(token_address).transfer(previousOwner, previousAmount);
         }
 
         // Update pixel ownership
         pixel.owner = msg.sender;
         pixel.stakeAmount = amount;
         pixel.color = color;
+        pixel.token_address = token_address;
 
         emit PixelStaked(msg.sender, pixelId, amount, color);
     }
