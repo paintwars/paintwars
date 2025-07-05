@@ -5,12 +5,12 @@ pragma solidity ^0.8.20;
 import {PixelStaking} from "./PixelStaking.sol";
 
 // LayerZero interfaces
-import {ILayerZeroEndpoint} from "@layerzerolabs/solidity-examples/contracts/interfaces/ILayerZeroEndpoint.sol";
-import {ILayerZeroReceiver} from "@layerzekrolabs/solidity-examples/contracts/interfaces/ILayerZeroReceiver.sol";
+import {ILayerZeroEndpointV2} from "@layerzerolabs/interfaces/ILayerZeroEndpointV2.sol";
+import {ILayerZeroReceiver} from "@layerzerolabs/interfaces/ILayerZeroReceiver.sol";
 
-contract PixelStakingOFT is PixelStaking, ILayerZeroReceiver {
+/*is PixelStaking, ILayerZeroReceiver*/ contract PixelStakingOApp {
     /// @notice LayerZero endpoint for this chain
-    ILayerZeroEndpoint public immutable lzEndpoint;
+    ILayerZeroEndpointV2 public immutable lzEndpoint;
 
     /// @notice Mapping of remote chainId ⇒ trusted remote address bytes
     mapping(uint16 => bytes) public trustedRemote;
@@ -20,7 +20,7 @@ contract PixelStakingOFT is PixelStaking, ILayerZeroReceiver {
 
     /// @param _owner     the initial owner for Ownable
     /// @param _endpoint  the LayerZero endpoint on this network
-    constructor(address _owner, address _endpoint) PixelStaking(_owner) {
-        lzEndpoint = ILayerZeroEndpoint(_endpoint);
+    constructor(address _owner, address _endpoint) /*PixelStaking(_owner)*/ {
+        lzEndpoint = ILayerZeroEndpointV2(_endpoint);
     }
 }
