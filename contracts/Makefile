@@ -6,8 +6,8 @@ ifneq (,$(wildcard ./.env))
 endif
 
 CONTRACTS_DIR = ./out
-CONTRACTS = PixelStaking
-FRONTEND_ABI_DIR = ../frontend/src/abis
+CONTRACTS = PixelStaking MintableToken
+FRONTEND_ABI_DIR = ../app/src/abis
 BACKEND_ABI_DIR = ../backend/src/contracts/abis
 
 .DEFAULT_GOAL := help

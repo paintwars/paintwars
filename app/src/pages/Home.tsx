@@ -22,7 +22,7 @@ import { accessibilitySharp, mapSharp, menuSharp } from "ionicons/icons";
 import { Redirect, Route } from "react-router";
 import { ToastContainer } from "react-toastify";
 
-// import MapPage from "./Map/Map";
+import MapPage from "./Map/Map";
 // import ProjectsPage from "./Projects/Projects";
 // import CommentatorPage from "./Commentator/Commentator";
 
