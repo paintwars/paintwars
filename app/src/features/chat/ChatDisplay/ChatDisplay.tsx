@@ -61,7 +61,7 @@ const ChatDisplay: React.FC = () => {
 				text: input || undefined,
 				image: image || undefined,
 				avatar:
-					'https://images.zapper.xyz/z/?path=zapper-fi-assets/nfts/medias/ca59f356027d5e17e82a750f8dc01264ac7019ac458cb44c187846f59fdd7a66.png&width=250&checksum=tKLDTulAvcuK538Rtoi_eM_moosAqIkSmQstZK8Y6oU',
+					"https://images.zapper.xyz/z/?path=zapper-fi-assets/nfts/medias/ca59f356027d5e17e82a750f8dc01264ac7019ac458cb44c187846f59fdd7a66.png&width=250&checksum=tKLDTulAvcuK538Rtoi_eM_moosAqIkSmQstZK8Y6oU",
 			},
 		]);
 		setInput("");
@@ -149,7 +149,11 @@ const ChatDisplay: React.FC = () => {
 								width: 32,
 								height: 32,
 								borderRadius: "50%",
-								background: msg.avatar ? `url(${msg.avatar})` : "#111",
+								backgroundColor: "#111",
+								backgroundImage: `url(${msg.avatar})`,
+								backgroundSize: "cover",
+								backgroundPosition: "center",
+								backgroundRepeat: "no-repeat",
 								display: "flex",
 								alignItems: "center",
 								justifyContent: "center",
