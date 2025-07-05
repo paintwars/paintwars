@@ -93,7 +93,7 @@ const StakeModal: React.FC<Props> = ({ pixelId }) => {
                 <div
                   className="color-block"
                   style={{ backgroundColor: colorToString(color) }}
-                ></div>
+                />
                 <IonLabel>{colorToString(color)}</IonLabel>
               </IonButton>
               <ColorPickerPopover color={color} onColorChange={setColor} />

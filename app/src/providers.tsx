@@ -1,3 +1,4 @@
+import { ScenarioActionsProvider } from "$features/pixels/map/MapDisplay/ScenarioActionsContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { Provider } from "react-redux";
@@ -12,7 +13,7 @@ export function Providers(props: { children: ReactNode }) {
 		<Provider store={store}>
 			<WagmiProvider config={config}>
 				<QueryClientProvider client={queryClient}>
-					{props.children}
+					<ScenarioActionsProvider>{props.children}</ScenarioActionsProvider>
 				</QueryClientProvider>
 			</WagmiProvider>
 		</Provider>
