@@ -8,11 +8,10 @@ from src.models.paintwars.pixel.pixel_crud import (
     PIXELS,
     PixelModel,
     PixelCreate,
-    PixelBase,
+    PixelBase
 )
 from src.models.session import async_session
 from src.ai.utils import hash_address
-from src.contracts.provider import pixel_staking_contract
 
 GRID_H = 100
 GRID_W = 100

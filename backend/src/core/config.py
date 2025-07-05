@@ -58,6 +58,8 @@ class Settings(BaseSettings):
     PIXEL_STAKING_ADDRESS: str = ""
     PROJECT_FACTORY_ADDRESS: str = ""
 
+    ADMIN_PRIVATE_KEY: str = ""
+
     class Config:
         # env_file = str(Path(__file__).resolve().parent.parent.parent.parent / ".env")
         case_sensitive = True

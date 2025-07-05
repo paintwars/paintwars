@@ -4,7 +4,7 @@ import asyncio
 from sqlalchemy.ext.asyncio.session import AsyncSession
 from sqlalchemy.util import b
 
-from backend.src.ai.placement.init import update_grid
+from src.ai.placement.init import update_grid
 from src.models.session import async_session
 from src.models.key_value.key_value_crud import KEYVALUE
 from src.models.paintwars.pixel_event.pixel_event_crud import (
@@ -34,7 +34,7 @@ async def propagate_pixel_event(dbEvent: PixelEventCreate, db: AsyncSession):
     update_grid(pixel)
 
 
-async def parse_pixel_staked_event(event: Any, db: AsyncSession):
+async def parse_pixel_changed_event(event: Any, db: AsyncSession):
     print("new event: ", event, flush=True)
     block = await provider.eth.get_block(event["blockNumber"])
     block_timestamp = block["timestamp"] if "timestamp" in block else 0
@@ -43,12 +43,14 @@ async def parse_pixel_staked_event(event: Any, db: AsyncSession):
 
     event_data = event["args"]
     dbEvent = PixelEventCreate(
+        chain_id=1,
         pixel_id=event_data["pixelId"],
         owner=event_data["staker"].lower(),
         stake_amount=event_data["amount"],
-        effective_stake_amount=event_data["effective_amount"],
+        effective_stake_amount=event_data["effectiveAmount"],
         color=event_data["color"],
         log_index=event["logIndex"],
+        token_address=event_data["token_address"].lower(),
         hash=f"0x{event["transactionHash"].hex().lower()}",
         timestamp=datetime.utcfromtimestamp(block_timestamp),
     )
@@ -56,151 +58,35 @@ async def parse_pixel_staked_event(event: Any, db: AsyncSession):
     await propagate_pixel_event(dbEvent, db)
 
 
-async def parse_pixels_staked_event(event: Any, db: AsyncSession):
-    print("new event: ", event, flush=True)
-    block = await provider.eth.get_block(event["blockNumber"])
-    block_timestamp = block["timestamp"] if "timestamp" in block else 0
+# async def parse_spell_applied_event(event: Any, db: AsyncSession):
+#     print("new event: ", event, flush=True)
+#     block = await provider.eth.get_block(event["blockNumber"])
+#     block_timestamp = block["timestamp"] if "timestamp" in block else 0
 
-    event_data = event["args"]
-    pixelIds = event_data["pixelIds"]
-    colors = event_data["colors"]
-    amounts = event_data["amounts"]
-    effective_amounts = event_data["effective_amounts"]
-    owner = event_data["staker"].lower()
-    timestamp = datetime.utcfromtimestamp(block_timestamp)
-    hash = f"0x{event["transactionHash"].hex().lower()}"
-    log_index = event["logIndex"]
-    nbrPixels = len(pixelIds)
-    for i in range(nbrPixels):
-        dbEvent = PixelEventCreate(
-            pixel_id=pixelIds[i],
-            owner=owner,
-            stake_amount=amounts[i],
-            effective_stake_amount=effective_amounts[i],
-            color=colors[i],
-            log_index=log_index,
-            hash=hash,
-            timestamp=timestamp,
-        )
-        await PIXEL_EVENTS.create(db, obj_in=dbEvent)
-        await propagate_pixel_event(dbEvent, db)
-
-
-async def parse_pixel_unstaked_event(event: Any, db: AsyncSession):
-    print("new event: ", event, flush=True)
-    block = await provider.eth.get_block(event["blockNumber"])
-    block_timestamp = block["timestamp"] if "timestamp" in block else 0
-
-    event_data = event["args"]
-    dbEvent = PixelEventCreate(
-        pixel_id=event_data["pixelId"],
-        owner=event_data["staker"].lower(),
-        stake_amount=0,
-        effective_stake_amount=0,
-        color=0x000000,
-        log_index=event["logIndex"],
-        hash=f"0x{event["transactionHash"].hex().lower()}",
-        timestamp=datetime.utcfromtimestamp(block_timestamp),
-    )
-    await PIXEL_EVENTS.create(db, obj_in=dbEvent)
-    await propagate_pixel_event(dbEvent, db)
-
-
-async def parse_pixels_unstaked_event(event: Any, db: AsyncSession):
-    print("new event: ", event, flush=True)
-    block = await provider.eth.get_block(event["blockNumber"])
-    block_timestamp = block["timestamp"] if "timestamp" in block else 0
-
-    event_data = event["args"]
-    pixelIds = event_data["pixelIds"]
-    owner = event_data["staker"].lower()
-    timestamp = datetime.utcfromtimestamp(block_timestamp)
-    hash = f"0x{event["transactionHash"].hex().lower()}"
-    log_index = event["logIndex"]
-    nbrPixels = len(pixelIds)
-    for i in range(nbrPixels):
-        dbEvent = PixelEventCreate(
-            pixel_id=pixelIds[i],
-            owner=owner,
-            stake_amount=0,
-            effective_stake_amount=0,
-            color=0x000000,
-            log_index=log_index,
-            hash=hash,
-            timestamp=timestamp,
-        )
-        await PIXEL_EVENTS.create(db, obj_in=dbEvent)
-        await propagate_pixel_event(dbEvent, db)
-
-
-async def parse_pixel_color_changed_event(event: Any, db: AsyncSession):
-    print("new event: ", event, flush=True)
-    block = await provider.eth.get_block(event["blockNumber"])
-    block_timestamp = block["timestamp"] if "timestamp" in block else 0
-
-    event_data = event["args"]
-    pixel_id = event_data["pixelId"]
-    existing_px = await PIXELS.get(db, pixel_id=pixel_id)
-    if existing_px is not None:
-        dbEvent = PixelEventCreate(
-            pixel_id=pixel_id,
-            owner=existing_px.owner,
-            stake_amount=existing_px.stake_amount,
-            effective_stake_amount=existing_px.effective_stake_amount,
-            color=event_data["color"],
-            log_index=event["logIndex"],
-            hash=f"0x{event["transactionHash"].hex().lower()}",
-            timestamp=datetime.utcfromtimestamp(block_timestamp),
-        )
-        await PIXEL_EVENTS.create(db, obj_in=dbEvent)
-        await propagate_pixel_event(dbEvent, db)
-
-
-async def parse_pixels_color_changed_event(event: Any, db: AsyncSession):
-    print("new event: ", event, flush=True)
-    block = await provider.eth.get_block(event["blockNumber"])
-    block_timestamp = block["timestamp"] if "timestamp" in block else 0
-
-    event_data = event["args"]
-    pixel_ids = event_data["pixelIds"]
-    colors = event_data["colors"]
-    timestamp = datetime.utcfromtimestamp(block_timestamp)
-    hash = f"0x{event["transactionHash"].hex().lower()}"
-    log_index = event["logIndex"]
-    nbr_pxs = len(pixel_ids)
-    for i in range(nbr_pxs):
-        existing_px = await PIXELS.get(db, pixel_id=pixel_ids[i])
-        if existing_px is not None:
-            dbEvent = PixelEventCreate(
-                pixel_id=pixel_ids[i],
-                owner=existing_px.owner,
-                stake_amount=existing_px.stake_amount,
-                effective_stake_amount=existing_px.effective_stake_amount,
-                color=colors[i],
-                log_index=log_index,
-                hash=hash,
-                timestamp=timestamp,
-            )
-            await PIXEL_EVENTS.create(db, obj_in=dbEvent)
-            await propagate_pixel_event(dbEvent, db)
-
+#     event_data = event["args"]
+#     pixelIds = event_data["pixelIds"]
+#     timestamp = datetime.utcfromtimestamp(block_timestamp)
+#     hash = f"0x{event["transactionHash"].hex().lower()}"
+#     log_index = event["logIndex"]
+#     nbrPixels = len(pixelIds)
+#     for i in range(nbrPixels):
+#         dbEvent = PixelEventCreate(
+#             pixel_id=pixelIds[i],
+#             log_index=log_index,
+#             hash=hash,
+#             timestamp=timestamp,
+#         )
+#         await PIXEL_EVENTS.create(db, obj_in=dbEvent)
+#         await propagate_pixel_event(dbEvent, db)
 
 async def parse_pixel_events(events: list[Any], db) -> str | None:
     if len(events) > 0:
         events.sort(key=lambda e: (e["blockNumber"], e["logIndex"]))
         for event in events:
-            if event["event"] == "PixelStaked":
-                await parse_pixel_staked_event(event, db)
-            elif event["event"] == "PixelsStaked":
-                await parse_pixels_staked_event(event, db)
-            elif event["event"] == "PixelUnstaked":
-                await parse_pixel_unstaked_event(event, db)
-            elif event["event"] == "PixelsUnstaked":
-                await parse_pixels_unstaked_event(event, db)
-            elif event["event"] == "PixelColorChanged":
-                await parse_pixel_color_changed_event(event, db)
-            elif event["event"] == "PixelsColorChanged":
-                await parse_pixels_color_changed_event(event, db)
+            if event["event"] == "PixelChanged":
+                await parse_pixel_changed_event(event, db)
+            # elif event["event"] == "SpellApplied":
+            #     await parse_spell_applied_event(event, db)
         latest = events[-1]
         latest_block = latest["blockNumber"] + 1
         await KEYVALUE.set(
@@ -208,46 +94,21 @@ async def parse_pixel_events(events: list[Any], db) -> str | None:
         )
         return latest_block
 
-
 async def create_event_filters(from_block: int) -> list[Any]:
     print("creating event filters for ", from_block, flush=True)
-    px_staked_event_filter = (
-        await pixel_staking_contract.events.PixelStaked.create_filter(
+    px_changed_event_filter = (
+        await pixel_staking_contract.events.PixelChanged.create_filter(
             from_block=from_block
         )
     )
-    pxs_staked_event_filter = (
-        await pixel_staking_contract.events.PixelsStaked.create_filter(
-            from_block=from_block
-        )
-    )
-    px_unstaked_event_filter = (
-        await pixel_staking_contract.events.PixelUnstaked.create_filter(
-            from_block=from_block
-        )
-    )
-    pxs_unstaked_event_filter = (
-        await pixel_staking_contract.events.PixelsUnstaked.create_filter(
-            from_block=from_block
-        )
-    )
-    px_color_event_filter = (
-        await pixel_staking_contract.events.PixelColorChanged.create_filter(
-            from_block=from_block
-        )
-    )
-    pxs_color_event_filter = (
-        await pixel_staking_contract.events.PixelsColorChanged.create_filter(
-            from_block=from_block
-        )
-    )
+    # sp_applied_event_filter = (
+    #     await pixel_staking_contract.events.SpellApplied.create_filter(
+    #         from_block=from_block
+    #     )
+    # )
     return [
-        px_staked_event_filter,
-        pxs_staked_event_filter,
-        px_unstaked_event_filter,
-        pxs_unstaked_event_filter,
-        px_color_event_filter,
-        pxs_color_event_filter,
+        px_changed_event_filter,
+        # sp_applied_event_filter,
     ]
 
 
@@ -264,7 +125,6 @@ async def extract_events(filters: list[Any], onlyNew: bool = True) -> list[Any]:
 
 
 async def catchup(db: AsyncSession) -> int:
-
     from_block_key_value = await KEYVALUE.get(db, key=LAST_INDEXED_BLOCK_FOR_EVENTS)
     fallback = await provider.eth.get_block_number()
     from_block = (
@@ -275,24 +135,6 @@ async def catchup(db: AsyncSession) -> int:
 
     # from_block = 1175465 if from_block < 1175455 else from_block
     event_filters = await create_event_filters(from_block)
-
-    # more stable liquidity pool
-    # advertising in pixels never been done before, only one to give ad places in pixel, examples of crypto punks, we bring revenues. We are leveraging the competive, using that to build a space that more degen friendly.
-    # def fetch_logs_in_batches(start_block, end_block, batch_size=1000):
-    #     all_logs = []
-    #     for block in range(start_block, end_block, batch_size):
-    #         batch_end = min(block + batch_size - 1, end_block)
-    #         batch_logs = web3.eth.get_logs({
-    #             'fromBlock': block,
-    #             'toBlock': batch_end,
-    #             'address': contract_address,
-    #             'topics': [contract.events.MyEvent()._get_event_signature_hex()]
-    #         })
-    #         all_logs.extend(batch_logs)
-    #     return all_logs
-
-    # logs = fetch_logs_in_batches(1000000, web3.eth.block_number)
-    # print(logs)
 
     events = await extract_events(event_filters, False)
     await parse_pixel_events(events, db)

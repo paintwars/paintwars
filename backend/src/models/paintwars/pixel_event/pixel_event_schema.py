@@ -3,10 +3,12 @@ from datetime import datetime
 
 class PixelEventBase(BaseModel):
     log_index: int
+    chain_id: int
     hash: str
     pixel_id: int
     stake_amount: int
     effective_stake_amount: int
+    token_address: str
     color: int
     owner: str
     timestamp: datetime

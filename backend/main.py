@@ -6,7 +6,7 @@ import asyncio
 from src.core.config import config
 from src.api import api_router
 from src.contracts.provider import provider_connect
-from backend.src.contracts.pixel_listeners import listen_to_pixels_events_loop
+from src.contracts.pixel_listeners import listen_to_pixels_events_loop
 
 app = FastAPI()
 
