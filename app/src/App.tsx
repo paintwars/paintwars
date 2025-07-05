@@ -1,11 +1,11 @@
 import {
-	IonApp,
-	IonButtons,
-	IonHeader,
-	IonMenuButton,
-	IonRouterOutlet,
-	IonToolbar,
-	setupIonicReact,
+  IonApp,
+  IonButtons,
+  IonHeader,
+  IonMenuButton,
+  IonRouterOutlet,
+  IonToolbar,
+  setupIonicReact,
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { Route, Switch } from "react-router-dom";
@@ -48,34 +48,34 @@ import { Providers } from "./providers";
 setupIonicReact();
 
 const App: React.FC = () => (
-	<IonApp>
-		<Providers>
-			<IonHeader>
-				<IonToolbar>
-					<IonButtons slot="start">
-						<IonMenuButton color="primary" />
-					</IonButtons>
-					<div id="toolbar">
-						<div className="logo hide-md">
-							<div id="logo-text">
-								<span>paintwars</span>
-							</div>
-						</div>
-					</div>
-					<IonButtons slot="end">
-						{/* <MintButton /> */}
-						{/* <UserToolbar /> */}
-					</IonButtons>
-				</IonToolbar>
-			</IonHeader>
-			<IonReactRouter>
-				<IonRouterOutlet>
-					{/*@ts-ignore*/}
-					<Route path="/" component={Home} />
-				</IonRouterOutlet>
-			</IonReactRouter>
-		</Providers>
-	</IonApp>
+  <IonApp>
+    <Providers>
+      <IonHeader>
+        <IonToolbar>
+          <IonButtons slot="start">
+            <IonMenuButton color="primary" />
+          </IonButtons>
+          <div id="toolbar">
+            <div className="logo hide-md">
+              <div id="logo-text">
+                <span>PaintWars</span>
+              </div>
+            </div>
+          </div>
+          <IonButtons slot="end">
+            {/* <MintButton /> */}
+            {/* <UserToolbar /> */}
+          </IonButtons>
+        </IonToolbar>
+      </IonHeader>
+      <IonReactRouter>
+        <IonRouterOutlet>
+          {/*@ts-ignore*/}
+          <Route path="/" component={Home} />
+        </IonRouterOutlet>
+      </IonReactRouter>
+    </Providers>
+  </IonApp>
 );
 
 export default App;

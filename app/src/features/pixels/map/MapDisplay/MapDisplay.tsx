@@ -111,7 +111,8 @@ const MapDisplay: React.FC<Props> = () => {
           resizeTo: containerRef.current,
           resolution: window.devicePixelRatio || 1,
           antialias: true,
-          backgroundColor: 0x2c2e31,
+          // backgroundColor: 0xf2e8cf,
+          backgroundColor: 0xf1e6db,
         });
 
         // Check if component is still mounted

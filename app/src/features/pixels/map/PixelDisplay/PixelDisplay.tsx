@@ -12,14 +12,14 @@ type GraphicsWithData = Graphics & {
   customData: any;
 };
 
-const DEFAULT_COLOR = 0x000000; // Default black color
+const DEFAULT_COLOR = 0xffffff; // Default color
 
 function drawPx(
   px: GraphicsWithData,
   color: number,
   x: number,
   y: number,
-  isHovered: boolean = false,
+  isHovered: boolean = false
 ): void {
   px.clear();
   const { isSelected } = px.customData;
@@ -28,33 +28,33 @@ function drawPx(
       x * BASE_PIXEL_SIZE,
       y * BASE_PIXEL_SIZE,
       BASE_PIXEL_SIZE,
-      BASE_PIXEL_SIZE,
+      BASE_PIXEL_SIZE
     ).fill({ color: 0xe2b714 });
     px.rect(
       x * BASE_PIXEL_SIZE + BORDER_SIZE,
       y * BASE_PIXEL_SIZE + BORDER_SIZE,
       BASE_PIXEL_SIZE - BORDER_SIZE * 2,
-      BASE_PIXEL_SIZE - BORDER_SIZE * 2,
+      BASE_PIXEL_SIZE - BORDER_SIZE * 2
     ).fill({ color: color });
   } else if (isHovered) {
     px.rect(
       x * BASE_PIXEL_SIZE,
       y * BASE_PIXEL_SIZE,
       BASE_PIXEL_SIZE,
-      BASE_PIXEL_SIZE,
+      BASE_PIXEL_SIZE
     ).fill({ color: 0x2c2e31 });
     px.rect(
       x * BASE_PIXEL_SIZE + BORDER_SIZE,
       y * BASE_PIXEL_SIZE + BORDER_SIZE,
       BASE_PIXEL_SIZE - BORDER_SIZE * 2,
-      BASE_PIXEL_SIZE - BORDER_SIZE * 2,
+      BASE_PIXEL_SIZE - BORDER_SIZE * 2
     ).fill({ color: color });
   } else {
     px.rect(
       x * BASE_PIXEL_SIZE,
       y * BASE_PIXEL_SIZE,
       BASE_PIXEL_SIZE,
-      BASE_PIXEL_SIZE,
+      BASE_PIXEL_SIZE
     ).fill({ color: color });
   }
 }
@@ -64,7 +64,7 @@ const PixelDisplay: React.FC<Props> = ({ id, layer }) => {
   const dispatch = useAppDispatch();
   const pixel = useAppSelector((state) => selectPixelById(state, id));
   const isSelected = useAppSelector(
-    (state) => state.pixels.selectedPixel == id,
+    (state) => state.pixels.selectedPixel == id
   );
 
   const pixelRef = useRef<IPixel>(pixel);
@@ -84,7 +84,6 @@ const PixelDisplay: React.FC<Props> = ({ id, layer }) => {
       dispatch(setSelectedPixel(pixelRef.current.id));
     });
 
-
     px.on("touchstart", (e) => {
       e.stopPropagation();
       dispatch(setSelectedPixel(pixelRef.current.id));
@@ -96,7 +95,7 @@ const PixelDisplay: React.FC<Props> = ({ id, layer }) => {
         pixelRef.current.color ?? DEFAULT_COLOR,
         pixelRef.current.x,
         pixelRef.current.y,
-        true,
+        true
       );
     });
 
@@ -106,7 +105,7 @@ const PixelDisplay: React.FC<Props> = ({ id, layer }) => {
         pixelRef.current.color ?? DEFAULT_COLOR,
         pixelRef.current.x,
         pixelRef.current.y,
-        false,
+        false
       );
     });
 
