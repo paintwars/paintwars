@@ -1,0 +1,17 @@
+services:
+  db:
+    image: postgres:16
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - data:/var/lib/postgresql/data/pgdata
+    env_file:
+      - .env
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_DB=${DB_NAME:-paintwars}
+      - POSTGRES_USER=${DB_USER:-paintwars}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-paintwars}
+
+volumes:
+  data:
