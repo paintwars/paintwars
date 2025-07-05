@@ -31,6 +31,7 @@ import StakeModal from "$features/pixels/modals/StakeModal/StakeModal";
 import { PIXEL_IDS } from "$features/pixels/pixels.utils";
 import { selectPixelEventsOfPixel } from "$features/pixels/pixelEvents.slice";
 import PixelHistory from "./PixelHistory";
+import Tooltip from "$features/shared/Tooltip/Tooltip";
 
 type Props = {};
 const PixelDetails: React.FC<Props> = ({}) => {
@@ -56,7 +57,51 @@ const PixelDetails: React.FC<Props> = ({}) => {
 
   return (
     <>
-      <IonModal isOpen={!!pixel}>
+      <IonLabel className="section-title pixel-details-header">
+        <div
+          className="pixel"
+          style={
+            {
+              "--color": pixel ? colorToString(pixel.color!) : "transparent",
+            } as any
+          }
+        />
+        <div className="name">
+          {pixel ? (
+            <div>
+              pixel#<span>{pixel?.id ?? 0}</span> ({pixel?.x ?? 0},
+              {pixel?.y ?? 0})
+            </div>
+          ) : (
+            <div>No pixel selected</div>
+          )}
+        </div>
+        <Tooltip text="Most funded projects" />
+      </IonLabel>
+      <div className="section-content">
+        <div className="content">
+          <div className="info">
+            <div className="info-title">history</div>
+            <div className="color-blocks">
+              <PixelHistory pixelId={selectedPixelId || 0} />
+            </div>
+          </div>
+          <div className="info">
+            <div className="info-title">owner</div>
+            <div className="info-value">
+              {shortenAddress(pixel?.owner ?? "")}
+            </div>
+          </div>
+          <div className="info">
+            <div className="info-title">staked</div>
+            <div className="info-value">
+              {pixel?.stakeAmount!.toFixed(2)}
+              <div className="unit">{pixel && "$"}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* <IonModal isOpen={!!pixel}>
         <IonHeader>
           <IonToolbar className="header-toolbar">
             <IonButtons slot="start">
@@ -108,7 +153,7 @@ const PixelDetails: React.FC<Props> = ({}) => {
             {selectedPixelId && <ActivityChart pixelId={selectedPixelId!} />}
           </IonSegmentContent>
         </IonContent>
-      </IonModal>
+      </IonModal> */}
     </>
   );
 };

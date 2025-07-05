@@ -42,6 +42,7 @@ import "@ionic/react/css/palettes/dark.system.css";
 import "./theme/variables.scss";
 
 import { Providers } from "./providers";
+import UserToolbar from "$features/user/UserToolbar/UserToolbar";
 // import UserToolbar from "$features/user/UserToolbar/UserToolbar";
 // import MintButton from "$features/shared/MintButton";
 
@@ -64,7 +65,7 @@ const App: React.FC = () => (
           </div>
           <IonButtons slot="end">
             {/* <MintButton /> */}
-            {/* <UserToolbar /> */}
+            <UserToolbar />
           </IonButtons>
         </IonToolbar>
       </IonHeader>

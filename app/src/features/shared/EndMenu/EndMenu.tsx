@@ -14,6 +14,7 @@ import ProjectsList from "$features/projects/ProjectsList/ProjectsList";
 import "./EndMenu.scss";
 import { useMenuContext } from "./useMenuContext";
 import { arrowBack, menuSharp } from "ionicons/icons";
+import PixelDetails from "$features/pixels/map/PixelDetails/PixelDetails";
 type Props = {
   menuId: string;
   contentId: string;
@@ -31,6 +32,7 @@ const EndMenu: React.FC<Props> = ({ menuId, contentId }) => {
       <IonContent id="end-menu-content">
         <div className="end-menu-container">
           <div className="section projects">
+            <PixelDetails />
             {/* <IonMenuToggle autoHide={false} menu={menuId}>
               <IonButton fill="clear" onClick={() => toggleRightMenu()}>
                 <IonIcon slot="icon-only" icon={arrowBack} />

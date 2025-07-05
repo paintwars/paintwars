@@ -77,6 +77,7 @@ const Home: React.FC = () => {
             </IonTabBar>
           </IonTabs>
           <ToastContainer position="top-center" autoClose={5000} theme="dark" />
+
           {/* <WatchEvents /> */}
         </IonContent>
       </IonSplitPane>

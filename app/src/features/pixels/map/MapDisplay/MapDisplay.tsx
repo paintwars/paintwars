@@ -385,7 +385,7 @@ const MapDisplay: React.FC<Props> = () => {
             </IonFooter>
           </IonModal>
 
-          <PixelDetails />
+          {/* <PixelDetails /> */}
         </>
       )}
     </div>

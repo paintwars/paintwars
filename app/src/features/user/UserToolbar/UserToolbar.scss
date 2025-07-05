@@ -1,0 +1,28 @@
+.user-toolbar {
+  color: var(--sub-color);
+  &:hover {
+    color: var(--text-color);
+  }
+}
+
+.user-toolbar-popover {
+  ion-item {
+    --color: white;
+    color: white;
+  }
+}
+
+ion-button {
+  ion-label {
+    --color: white;
+    color: white;
+  }
+}
+
+@media (max-width: 768px) {
+  ion-button.user-toolbar {
+    ion-label {
+      display: none;
+    }
+  }
+}

@@ -18,14 +18,12 @@ const PixelHistory: React.FC<Props> = ({ pixelId }) => {
         const eventIdx = events.length - 5 + idx;
         const event = eventIdx < 0 ? { color: 0xffffff } : events[eventIdx];
         return (
-          <IonButton fill="clear" slot="icon-only" key={idx}>
-            <div
-              className="color-block"
-              style={{
-                backgroundColor: colorToString(event.color),
-              }}
-            ></div>
-          </IonButton>
+          <div
+            className="color-block"
+            style={{
+              backgroundColor: colorToString(event.color),
+            }}
+          ></div>
         );
       })}
     </>
