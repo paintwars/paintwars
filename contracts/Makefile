@@ -60,10 +60,28 @@ approve: ## Approve PixelStaking contract to spend tokens. Usage: make approve a
 	@echo "Approving $(subst ",,$(strip $(PIXEL_STAKING_ADDRESS))) to spend $(amount) tokens from contract $(subst ",,$(strip $(STAKING_TOKEN_ADDRESS)))..."
 	@cast send $(subst ",,$(strip $(STAKING_TOKEN_ADDRESS))) "approve(address,uint256)" $(subst ",,$(strip $(PIXEL_STAKING_ADDRESS))) "$(amount)" --private-key $(subst ",,$(strip $(PRIVATE_KEY))) --rpc-url $(subst ",,$(strip $(RPC_URL)))
 
+applySpell: ## Apply a spell on a pixel. Usage: make applySpell spellType=<0–3> pixelId=<id> newPixelId=<id>
+	@echo "Applying spell type=$(spellType) on pixel=$(pixelId) target=$(newPixelId)"
+	@cast send $(PIXEL_STAKING_ADDRESS) \
+	  "applySpell(uint8,uint16,uint16)" \
+	  $(spellType) $(pixelId) $(newPixelId) \
+	  --private-key $(PRIVATE_KEY) \
+	  --rpc-url $(RPC_URL)
 
-stake: ## Call stakePixel method on the PixelStaking contract. Usage: make stake pixelId=<value> amount=<value> color=<value>
+changePixel: ## Call stakePixel method on the PixelStaking contract. Usage: make stake pixelId=<value> amount=<value> color=<value>
 	@echo "Calling stakePixel(pixelId, amount, color) on contract $(PIXEL_STAKING_ADDRESS)..."
-	@cast send $(PIXEL_STAKING_ADDRESS) "stakePixel(uint16,uint256,uint24)" $(pixelId) "$(amount)" $(color) --private-key $(PRIVATE_KEY) --rpc-url $(RPC_URL)
+	@cast send $(PIXEL_STAKING_ADDRESS) "changePixel(uint16,address,uint256,uint24)" $(pixelId) $(STAKING_TOKEN_ADDRESS) "$(amount)" $(color) --private-key $(PRIVATE_KEY) --rpc-url $(RPC_URL)
+
+
+runActions: ## Batch multiple actions. Usage: make runActions actions='<array-literal>'
+	@echo "Running actions: $(actions)"
+	@cast send $(PIXEL_STAKING_ADDRESS) \
+	  "runActions((uint16,uint16,uint8,uint8,uint24,uint256,address)[])" \
+	  '$(actions)' \
+	  --private-key $(PRIVATE_KEY) \
+	  --rpc-url $(RPC_URL)
+
+
 
 # mint: ## Call mint(address to, uint256 amount) on your contract. Usage: make mint to=<recipient_address> amount=<value>
 # 	@echo "Minting tokens to $(to) with amount $(amount) on contract $(STAKING_TOKEN_ADDRESS)..."
