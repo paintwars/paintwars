@@ -15,7 +15,7 @@ contract DeployPixel is Script {
         vm.startBroadcast();
 
         console.log("Deploying Token contract...");
-        token = new MintableToken("PXMT", "PIXAMUT");
+        token = new MintableToken("PXMT", "paintwars");
         console.log("Token deployed at:", address(token));
 
         address deployer = msg.sender;

@@ -1,12 +1,13 @@
 from os import path
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
-# import asyncio
+import asyncio
 
 from src.core.config import config
 from src.api import api_router
 from src.contracts.provider import provider_connect
-# from backend.src.contracts.project_factory_listeners import listen_to_project_factory_events_loop
+from backend.src.contracts.project_factory_listeners import listen_to_project_factory_events_loop
+from backend.src.contracts.pixel_listeners import listen_to_pixels_events_loop
 
 app = FastAPI()
 
@@ -24,6 +25,6 @@ app.include_router(api_router, prefix=config.API_PREFIX)
 @app.on_event("startup")
 async def startup_event():
     await provider_connect()
-    # asyncio.create_task(listen_to_project_factory_events_loop())
+    asyncio.create_task(listen_to_project_factory_events_loop())
     # await asyncio.sleep(1)
-    # asyncio.create_task(listen_to_pixels_events_loop())
+    asyncio.create_task(listen_to_pixels_events_loop())

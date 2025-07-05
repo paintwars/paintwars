@@ -28,6 +28,9 @@ class PixelModel(Base):
     stake_amount: Mapped[int] = mapped_column(
         Numeric(precision=78, scale=0), nullable=False, server_default=text("0")
     )
+    effective_stake_amount: Mapped[int] = mapped_column(
+        Numeric(precision=78, scale=0), nullable=False, server_default=text("0")
+    )
     hash: Mapped[str] = mapped_column(
         String,
         nullable=False,

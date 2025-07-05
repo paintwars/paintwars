@@ -5,6 +5,7 @@ class PixelBase(BaseModel):
     id: int
     color: int
     stake_amount: int
+    effective_stake_amount: int
     owner: str
 
 class PixelCreate(PixelBase):
