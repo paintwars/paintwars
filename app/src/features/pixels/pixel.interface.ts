@@ -4,6 +4,7 @@ export type IPixelUpdate = {
   id: number;
   color?: number | undefined;
   stakeAmount?: number | undefined;
+  effectiveStakeAmount?: number | undefined;
   owner?: string | undefined;
   hash: string;
 };
@@ -16,6 +17,7 @@ export type IPixelInDB = {
   id: number;
   color: number;
   stake_amount: number | string;
+  effective_stake_amount: number | string;
   owner: string;
   hash: string;
 };

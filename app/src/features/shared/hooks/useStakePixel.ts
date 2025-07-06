@@ -44,8 +44,8 @@ export function useStakePixel({
   });
 
   const needsApproval = useMemo(() => {
-    if (allowance == undefined) return false;
-    return (allowance as bigint) < parseEther(amount || "0");
+    if (allowance === undefined || allowance === null) return false;
+    return BigInt(allowance as bigint) < parseEther(amount || "0");
   }, [allowance, amount]);
 
   const approve = async () => {
@@ -65,12 +65,18 @@ export function useStakePixel({
 
   const stake = async () => {
     try {
+      console.log("staking", {
+        pixelId: BigInt(pixelId),
+        tokenAddress: CONTRACTS.Token.address,
+        amount: parseEther(amount),
+        color: BigInt(color),
+      });
       await writeContractAsync({
         ...CONTRACTS.PixelStaking,
-        functionName: "stakePixel",
+        functionName: "changePixelCrossChain",
         args: [
           BigInt(pixelId),
-          CONTRACTS.PixelStaking.address,
+          CONTRACTS.Token.address,
           parseEther(amount),
           BigInt(color),
         ],
@@ -86,6 +92,9 @@ export function useStakePixel({
     hash: hash,
   });
 
+  if (error) {
+    console.log("error", error);
+  }
   return {
     stake,
     approve,
