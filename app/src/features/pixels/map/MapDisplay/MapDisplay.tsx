@@ -365,6 +365,7 @@ const MapDisplay: React.FC<Props> = () => {
                       <span>PXMT</span>
                     </IonLabel>
                   </IonButton>
+                  
                   <StakeAmountPopover
                     onStakeAmountSet={setFundsToDeposit}
                     trigger="image-width-input"

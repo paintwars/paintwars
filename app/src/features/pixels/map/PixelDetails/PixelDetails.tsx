@@ -1,107 +1,205 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import "./PixelDetails.scss";
-import { useAppSelector, useAppDispatch } from "$store/hooks";
+import { useAppDispatch, useAppSelector } from "$store/hooks";
 
-import {
-  IonButtons,
-  IonButton,
-  IonModal,
-  IonHeader,
-  IonContent,
-  IonToolbar,
-  IonTitle,
-  IonIcon,
-  IonLabel,
-  IonFooter,
-  IonSegment,
-  IonSegmentView,
-  IonSegmentContent,
-  IonSegmentButton,
-} from "@ionic/react";
-import { closeSharp } from "ionicons/icons";
-import {
-  selectControlOfOwner,
-  selectPixelById,
-  selectTVL,
-  setSelectedPixel,
-} from "$features/pixels/pixel.slice";
-import { colorToString, shortenAddress } from "$features/shared/utils";
-import ActivityChart from "./ActivityChart/ActivityChart";
+import ColorPickerPopover from "$features/pixels/modals/ColorPickerPopover/ColorPickerPopover";
+import StakeAmountPopover from "$features/pixels/modals/StakeAmountPopover/StakeAmountPopover";
+import StakeButton from "$features/pixels/modals/StakeModal/StakeButton";
 import StakeModal from "$features/pixels/modals/StakeModal/StakeModal";
-import { PIXEL_IDS } from "$features/pixels/pixels.utils";
+import {
+	selectControlOfOwner,
+	selectPixelById,
+	selectTVL,
+	setSelectedPixel,
+} from "$features/pixels/pixel.slice";
 import { selectPixelEventsOfPixel } from "$features/pixels/pixelEvents.slice";
-import PixelHistory from "./PixelHistory";
+import { PIXEL_IDS } from "$features/pixels/pixels.utils";
 import Tooltip from "$features/shared/Tooltip/Tooltip";
+import { usePXMTBalance } from "$features/shared/hooks/usePXMTBalance";
+import { colorToString, shortenAddress } from "$features/shared/utils";
+import {
+	IonButton,
+	IonButtons,
+	IonContent,
+	IonFooter,
+	IonHeader,
+	IonIcon,
+	IonInput,
+	IonLabel,
+	IonModal,
+	IonSegment,
+	IonSegmentButton,
+	IonSegmentContent,
+	IonSegmentView,
+	IonTitle,
+	IonToolbar,
+} from "@ionic/react";
+import {
+	closeSharp,
+	magnetSharp,
+	pauseSharp,
+	resizeSharp,
+	shieldSharp,
+	snowSharp,
+	walletSharp,
+} from "ionicons/icons";
+import ActivityChart from "./ActivityChart/ActivityChart";
+import PixelHistory from "./PixelHistory";
 
-type Props = {};
-const PixelDetails: React.FC<Props> = ({}) => {
-  const selectedPixelId = useAppSelector((state) => state.pixels.selectedPixel);
-  const tvl = useAppSelector(selectTVL);
-  const pixel = useAppSelector((state) =>
-    selectPixelById(state, selectedPixelId ?? -1)
-  );
-  const controls = useAppSelector((state) =>
-    selectControlOfOwner(state, pixel?.owner!)
-  );
-  const dispatch = useAppDispatch();
+const PixelDetails: React.FC = () => {
+	const balance = usePXMTBalance();
+	const selectedPixelId = useAppSelector((state) => state.pixels.selectedPixel);
+	const tvl = useAppSelector(selectTVL);
+	const pixel = useAppSelector((state) =>
+		selectPixelById(state, selectedPixelId ?? -1),
+	);
 
-  const [isLeftOpen, setIsLeftOpen] = useState<boolean>(true);
-  const [isRightOpen, setIsRightOpen] = useState<boolean>(true);
+	const [color, setColor] = useState<number>(pixel?.color ?? 0x000000);
+	const [amount, setAmount] = useState<number>(0);
+	const [isStaking, setIsStaking] = useState(false);
 
-  function toggleIsLeftOpen() {
-    setIsLeftOpen((previous) => !previous);
-  }
-  function toggleIsRightOpen() {
-    setIsRightOpen((previous) => !previous);
-  }
+	return (
+		<>
+			<IonLabel className="section-title pixel-details-header">
+				<div
+					className="pixel"
+					style={
+						pixel
+							? ({
+									"--color": pixel.color
+										? colorToString(pixel.color)
+										: "transparent",
+								} as React.CSSProperties)
+							: undefined
+					}
+				/>
+				<div className="name">
+					{pixel ? (
+						<div>
+							pixel#<span>{pixel?.id ?? 0}</span> ({pixel?.x ?? 0},
+							{pixel?.y ?? 0})
+						</div>
+					) : (
+						<div>No pixel selected</div>
+					)}
+				</div>
+				<Tooltip text="Most funded projects" />
+			</IonLabel>
+			{pixel ? (
+				<div className="section-content">
+					<div className="content">
+						<div className="info">
+							<div className="info-title">history</div>
+							<div className="color-blocks">
+								<PixelHistory pixelId={selectedPixelId || 0} />
+							</div>
+						</div>
+						<div className="info">
+							<div className="info-title">owner</div>
+							<div className="info-value">
+								{shortenAddress(pixel?.owner ?? "")}
+							</div>
+						</div>
+						<div className="info">
+							<div className="info-title">staked</div>
+							<div className="info-value">
+								{pixel?.stakeAmount?.toFixed(2)}
+								<div className="unit">{pixel && "$"}</div>
+							</div>
+						</div>
 
-  return (
-    <>
-      <IonLabel className="section-title pixel-details-header">
-        <div
-          className="pixel"
-          style={
-            {
-              "--color": pixel ? colorToString(pixel.color!) : "transparent",
-            } as any
-          }
-        />
-        <div className="name">
-          {pixel ? (
-            <div>
-              pixel#<span>{pixel?.id ?? 0}</span> ({pixel?.x ?? 0},
-              {pixel?.y ?? 0})
-            </div>
-          ) : (
-            <div>No pixel selected</div>
-          )}
-        </div>
-        <Tooltip text="Most funded projects" />
-      </IonLabel>
-      <div className="section-content">
-        <div className="content">
-          <div className="info">
-            <div className="info-title">history</div>
-            <div className="color-blocks">
-              <PixelHistory pixelId={selectedPixelId || 0} />
-            </div>
-          </div>
-          <div className="info">
-            <div className="info-title">owner</div>
-            <div className="info-value">
-              {shortenAddress(pixel?.owner ?? "")}
-            </div>
-          </div>
-          <div className="info">
-            <div className="info-title">staked</div>
-            <div className="info-value">
-              {pixel?.stakeAmount!.toFixed(2)}
-              <div className="unit">{pixel && "$"}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* <IonModal isOpen={!!pixel}>
+						<div
+							style={{
+								display: "flex",
+								gap: "2px",
+								justifyContent: "space-evenly",
+							}}
+						>
+							<IonButton
+								className="input-button"
+								style={{ color: "white" }}
+								fill="outline"
+								onClick={() => setIsStaking((curr) => !curr)}
+							>
+								<IonIcon icon={walletSharp} />
+							</IonButton>
+							<IonButton
+								className="input-button"
+								style={{ color: "white" }}
+								fill="outline"
+							>
+								<IonIcon icon={snowSharp} />
+							</IonButton>
+							<IonButton
+								className="input-button"
+								style={{ color: "white" }}
+								fill="outline"
+							>
+								<IonIcon icon={shieldSharp} />
+							</IonButton>
+							<IonButton
+								className="input-button"
+								style={{ color: "white" }}
+								fill="outline"
+							>
+								<IonIcon icon={pauseSharp} />
+							</IonButton>
+							<IonButton
+								className="input-button"
+								style={{ color: "white" }}
+								fill="outline"
+							>
+								<IonIcon icon={magnetSharp} />
+							</IonButton>
+						</div>
+						{isStaking ? (
+							<div>
+								<div className="info">
+									<div className="info-title">Set new color</div>{" "}
+									<IonButton
+										className="input-button"
+										fill="clear"
+										id="stake-color-input"
+									>
+										<div
+											className="color-block"
+											style={{ backgroundColor: colorToString(color) }}
+										/>
+										<IonLabel>{colorToString(color)}</IonLabel>
+									</IonButton>
+									<ColorPickerPopover color={color} onColorChange={setColor} />
+									<div className="info-value">
+										<IonButton
+											className="input-button"
+											fill="clear"
+											id="stake-trigger"
+										>
+											<IonLabel>
+												<span>Stake PXMT</span>
+											</IonLabel>
+										</IonButton>
+										<StakeAmountPopover
+											trigger={"stake-trigger"}
+											onStakeAmountSet={setAmount}
+										/>
+									</div>
+								</div>
+								{color &&
+								amount &&
+								(!pixel.stakeAmount || amount !== pixel.stakeAmount) ? (
+									<StakeButton
+										amount={amount}
+										balance={balance}
+										color={color}
+										pixelId={pixel.id}
+									/>
+								) : null}
+							</div>
+						) : null}
+					</div>
+				</div>
+			) : null}
+			{/* <IonModal isOpen={!!pixel}>
         <IonHeader>
           <IonToolbar className="header-toolbar">
             <IonButtons slot="start">
@@ -154,8 +252,8 @@ const PixelDetails: React.FC<Props> = ({}) => {
           </IonSegmentContent>
         </IonContent>
       </IonModal> */}
-    </>
-  );
+		</>
+	);
 };
 
 export default memo(PixelDetails);
