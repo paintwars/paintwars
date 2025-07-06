@@ -18,6 +18,7 @@ dependencies = [
     "jose>=1.0.0",
     "Image>=1.5.33",
     "asyncpg>=0.30.0",
+    "greenlet>=3.2.3",
 ]
 requires-python = "==3.13.*"
 readme = "README.md"

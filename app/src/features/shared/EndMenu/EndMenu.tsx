@@ -31,13 +31,15 @@ const EndMenu: React.FC<Props> = ({ menuId, contentId }) => {
     >
       <IonContent id="end-menu-content">
         <div className="end-menu-container">
-          <div className="section projects">
+          <div className="section details">
             <PixelDetails />
             {/* <IonMenuToggle autoHide={false} menu={menuId}>
               <IonButton fill="clear" onClick={() => toggleRightMenu()}>
                 <IonIcon slot="icon-only" icon={arrowBack} />
               </IonButton>
             </IonMenuToggle> */}
+          </div>
+          <div className="section projects">
             <IonLabel className="section-title">
               <div>projects</div>
               <Tooltip text="Most funded projects" />

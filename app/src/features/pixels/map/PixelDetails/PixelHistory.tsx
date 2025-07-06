@@ -20,6 +20,7 @@ const PixelHistory: React.FC<Props> = ({ pixelId }) => {
         return (
           <div
             className="color-block"
+            key={idx}
             style={{
               backgroundColor: colorToString(event.color),
             }}

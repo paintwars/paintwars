@@ -68,7 +68,12 @@ export function useStakePixel({
       await writeContractAsync({
         ...CONTRACTS.PixelStaking,
         functionName: "stakePixel",
-        args: [BigInt(pixelId), parseEther(amount), BigInt(color)],
+        args: [
+          BigInt(pixelId),
+          CONTRACTS.PixelStaking.address,
+          parseEther(amount),
+          BigInt(color),
+        ],
       });
       toast.success("Pixel staked successfully!");
     } catch (error: any) {
