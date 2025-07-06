@@ -20,7 +20,7 @@ const GridDisplay: React.FC<Props> = ({ layer }) => {
         .moveTo(0, y * BASE_PIXEL_SIZE)
         .lineTo(WIDTH * BASE_PIXEL_SIZE, y * BASE_PIXEL_SIZE);
     }
-    grid.stroke({ width: 2, color: 0xffffff });
+    grid.stroke({ width: 1, color: 0xf1e6db });
 
     layer.addChild(grid);
     return () => {

@@ -59,7 +59,6 @@ const App: React.FC = () => (
           </IonButtons>
           <ToolbarContent />
           <IonButtons slot="end">
-            {/* <MintButton /> */}
             <UserToolbar />
           </IonButtons>
         </IonToolbar>

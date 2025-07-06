@@ -3,11 +3,29 @@
   &:hover {
     color: var(--text-color);
   }
+
+  #username {
+    color: var(--ion-color-primary);
+  }
+}
+
+ion-popover {
+  ion-label {
+    color: white;
+  }
 }
 
 .user-toolbar-popover {
   ion-item {
     --color: white;
+    color: white;
+
+    .connect {
+      color: white;
+    }
+  }
+
+  .connect {
     color: white;
   }
 }

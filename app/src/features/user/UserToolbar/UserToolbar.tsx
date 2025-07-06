@@ -94,15 +94,18 @@ const UserToolbar: React.FC<Props> = ({}) => {
         onClick={handleOpenPopover}
       >
         <IonIcon slot="start" icon={personSharp} />
-        <IonLabel>{username || shortenAddress(address) || ""}</IonLabel>
+        <IonLabel id="username">
+          {username || shortenAddress(address) || ""}
+        </IonLabel>
       </IonButton>
       <IonPopover
         isOpen={showPopover}
         event={popoverEvent}
         onDidDismiss={handleClosePopover}
         showBackdrop={false}
+        className="popover"
       >
-        <IonList>
+        <IonList className="list">
           {/* {!username && (
             <IonItem button onClick={handleLogin} lines="none">
               <IonIcon slot="start" icon={logInSharp} />
@@ -110,9 +113,14 @@ const UserToolbar: React.FC<Props> = ({}) => {
             </IonItem>
           )} */}
           {!isConnected && isDesktop && (
-            <IonItem button onClick={handleConnectWallet} lines="none">
+            <IonItem
+              className="list"
+              button
+              onClick={handleConnectWallet}
+              lines="none"
+            >
               <IonIcon slot="start" icon={walletSharp} />
-              <IonLabel style={{ color: "white" }}>connect wallet</IonLabel>
+              <IonLabel className="label-text">connect wallet</IonLabel>
             </IonItem>
           )}
           <IonItem

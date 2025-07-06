@@ -1,26 +1,50 @@
-// src/components/LeaderboardMenu.tsx
 import React, { useState } from "react";
 import { IonSegment, IonSegmentButton, IonLabel } from "@ionic/react";
 import { useAccount } from "wagmi";
 import "./Leaderboard.scss";
+import {
+  selectControlOfOwner,
+  selectUsedOfOwner,
+} from "$features/pixels/pixel.slice";
+import { selectPixelEventsOfUser } from "$features/pixels/pixelEvents.slice";
+import { calculateScore } from "$features/user/calculateScore";
+import { useAppSelector } from "$store/hooks";
 
 interface LeaderboardMenuProps {}
 
 const LeaderboardMenu: React.FC<LeaderboardMenuProps> = () => {
-  // const { address: user } = useAccount();
-  const user = "User2";
+  // const allUsersOwned = useAppSelector((state) =>
+  //   selectOwnersSortedByControl(state, user)
+  // );
+  // const allUsersStaked = useAppSelector((state) =>
+  //   selectOwnersSortedByStake(state, user)
+  // );
+  // const dataByPixels = allUsersOwned.map(({ owner, count }) => ({
+  //   user: owner,
+  //   value: count,
+  // }));
+  // const dataByStaked = allUsersStaked.map(({ owner, totalStaked }) => ({
+  //   user: owner,
+  //   value: totalStaked,
+  // }));
+  const { address: user } = useAccount();
+  const owned = useAppSelector((state) => selectControlOfOwner(state, user));
+  const staked = useAppSelector((state) => selectUsedOfOwner(state, user));
+  const moves = useAppSelector((state) => selectPixelEventsOfUser(state, user));
+  const score = calculateScore(owned, staked, moves);
   const [open, setOpen] = useState(false);
   const [segment, setSegment] = useState<"first" | "second">("first");
 
-  // TODO: Replace with real data
   const dataByScore = [
-    { user: "User1", value: 1234 },
-    { user: "User2", value: 2664623464624636 },
-    { user: "User3", value: 1234 },
+    { user: "me", value: score },
+    { user: "Pepe", value: 1292 },
+    { user: "Giorgeow", value: 434 },
     // ...
   ];
   const dataByPixels = [
-    { user: "UserA", value: 98 },
+    { user: "me", value: owned },
+    { user: "Pepe", value: 2 },
+    { user: "Giorgeow", value: 1 },
     // ...
   ];
 
@@ -67,6 +91,8 @@ const LeaderboardMenu: React.FC<LeaderboardMenuProps> = () => {
             <li
               key={idx}
               className={
+                // highlight if it's your real address *or* the "me" placeholder
+                item.user === "me" ||
                 item.user?.toLowerCase() === user?.toLowerCase()
                   ? "highlighted"
                   : ""

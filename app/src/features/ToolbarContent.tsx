@@ -3,13 +3,14 @@ import { selectControlOfOwner, selectUsedOfOwner } from "./pixels/pixel.slice";
 import { useAppSelector } from "$store/hooks";
 import { useAccount } from "wagmi";
 import { calculateScore } from "./user/calculateScore";
+import { selectPixelEventsOfUser } from "./pixels/pixelEvents.slice";
 
 type Props = {};
 const ToolbarContent: React.FC<Props> = ({}) => {
   const { address: user } = useAccount();
   const owned = useAppSelector((state) => selectControlOfOwner(state, user));
   const staked = useAppSelector((state) => selectUsedOfOwner(state, user));
-  const moves = 5; // TODO
+  const moves = useAppSelector((state) => selectPixelEventsOfUser(state, user));
   const score = calculateScore(owned, staked, moves);
   const place = 1;
 
@@ -28,7 +29,7 @@ const ToolbarContent: React.FC<Props> = ({}) => {
           </div>
           <div className="score-input">
             <p>Staked:</p>
-            <p>{staked}$</p>
+            <p>{staked.toFixed(2)}$</p>
           </div>
           <div className="score-input">
             <p>Moves:</p>
