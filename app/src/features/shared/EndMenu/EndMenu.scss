@@ -22,6 +22,9 @@ ion-menu {
         display: flex;
         flex-direction: column;
         position: relative;
+        &.projects {
+          flex: 2;
+        }
         ion-menu-toggle {
           position: absolute;
           left: 0px;

@@ -21,8 +21,8 @@ import ChatPage from "./Chat/Chat";
 
 // import WatchEvents from "$features/shared/WatchEvents/WatchEvents";
 import { useEffect } from "react";
-// import { fetchPixels } from "$features/pixels/pixel.slice";
-// import { useAppDispatch } from "$store/hooks";
+import { fetchPixels } from "$features/pixels/pixel.slice";
+import { useAppDispatch } from "$store/hooks";
 // import { fetchProjects } from "$features/projects/project.slice";
 
 import "./Home.scss";
@@ -31,15 +31,16 @@ import "./Home.scss";
 import { MenuProvider } from "$features/shared/EndMenu/useMenuContext";
 import EndMenu from "$features/shared/EndMenu/EndMenu";
 import Leaderboard from "$features/shared/Leaderboard/Leaderboard";
+import WatchEvents from "$features/shared/WatchEvents/WatchEvents";
 
 const contentId = "main-content";
 const menuId = "end-menu";
 
 const Home: React.FC = () => {
-  // const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    // dispatch(fetchPixels());
+    dispatch(fetchPixels());
     // dispatch(fetchProjects());
   }, []);
 
@@ -80,7 +81,7 @@ const Home: React.FC = () => {
           </IonTabs>
           <ToastContainer position="top-center" autoClose={5000} theme="dark" />
 
-          {/* <WatchEvents /> */}
+          <WatchEvents />
         </IonContent>
       </IonSplitPane>
     </MenuProvider>

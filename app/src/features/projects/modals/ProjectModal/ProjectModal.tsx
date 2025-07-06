@@ -48,10 +48,10 @@ const ProjectModal: React.FC<Props> = ({
 }) => {
   const modal = useRef<HTMLIonModalElement>(null);
   const project = useAppSelector((state) =>
-    selectProjectByAddress(state, projectAddress),
+    selectProjectByAddress(state, projectAddress)
   );
   const controls = useAppSelector((state) =>
-    selectControlOfOwner(state, projectAddress),
+    selectControlOfOwner(state, projectAddress)
   );
 
   const [amount, setAmount] = useState<number>(0);

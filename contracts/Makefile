@@ -6,7 +6,7 @@ ifneq (,$(wildcard ./.env))
 endif
 
 CONTRACTS_DIR = ./out
-CONTRACTS = PixelStaking MintableToken
+CONTRACTS = PixelStaking MintableToken PixelStakingOApp
 FRONTEND_ABI_DIR = ../app/src/abis
 BACKEND_ABI_DIR = ../backend/src/contracts/abis
 
@@ -70,7 +70,7 @@ applySpell: ## Apply a spell on a pixel. Usage: make applySpell spellType=<0–3
 
 changePixel: ## Call stakePixel method on the PixelStaking contract. Usage: make stake pixelId=<value> amount=<value> color=<value>
 	@echo "Calling stakePixel(pixelId, amount, color) on contract $(PIXEL_STAKING_ADDRESS)..."
-	@cast send $(PIXEL_STAKING_ADDRESS) "changePixel(uint16,address,uint256,uint24)" $(pixelId) $(STAKING_TOKEN_ADDRESS) "$(amount)" $(color) --private-key $(PRIVATE_KEY) --rpc-url $(RPC_URL)
+	@cast send $(PIXEL_STAKING_ADDRESS) "changePixelCrossChain(uint16,address,uint256,uint24)" $(pixelId) $(STAKING_TOKEN_ADDRESS) "$(amount)" $(color) --private-key $(PRIVATE_KEY) --rpc-url $(RPC_URL)
 
 
 runActions: ## Batch multiple actions. Usage: make runActions actions='<array-literal>'
