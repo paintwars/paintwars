@@ -155,18 +155,16 @@ const PixelDetails: React.FC = () => {
 						{isStaking ? (
 							<div>
 								<div className="info">
-									<div className="info-title">Set new color</div>{" "}
+									<div className="info-title">Set new color</div>
 									<IonButton
-										className="input-button"
 										fill="clear"
 										id="stake-color-input"
-									>
-										<div
-											className="color-block"
-											style={{ backgroundColor: colorToString(color) }}
-										/>
-										<IonLabel>{colorToString(color)}</IonLabel>
-									</IonButton>
+										style={{
+											width: "36px",
+											height: "12px",
+											backgroundColor: color ? colorToString(color) : "white",
+										}}
+									/>
 									<ColorPickerPopover color={color} onColorChange={setColor} />
 									<div className="info-value">
 										<IonButton
