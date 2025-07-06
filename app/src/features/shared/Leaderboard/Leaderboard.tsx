@@ -1,38 +1,61 @@
-// src/components/LeaderboardMenu.tsx
 import React, { useState } from "react";
 import { IonSegment, IonSegmentButton, IonLabel } from "@ionic/react";
 import { useAccount } from "wagmi";
 import "./Leaderboard.scss";
-import { useAppSelector } from "$store/hooks";
 import {
-  selectOwnersSortedByControl,
-  selectOwnersSortedByStake,
+  selectControlOfOwner,
+  selectUsedOfOwner,
 } from "$features/pixels/pixel.slice";
+import { selectPixelEventsOfUser } from "$features/pixels/pixelEvents.slice";
+import { calculateScore } from "$features/user/calculateScore";
+import { useAppSelector } from "$store/hooks";
 
 interface LeaderboardMenuProps {}
 
 const LeaderboardMenu: React.FC<LeaderboardMenuProps> = () => {
+  // const allUsersOwned = useAppSelector((state) =>
+  //   selectOwnersSortedByControl(state, user)
+  // );
+  // const allUsersStaked = useAppSelector((state) =>
+  //   selectOwnersSortedByStake(state, user)
+  // );
+  // const dataByPixels = allUsersOwned.map(({ owner, count }) => ({
+  //   user: owner,
+  //   value: count,
+  // }));
+  // const dataByStaked = allUsersStaked.map(({ owner, totalStaked }) => ({
+  //   user: owner,
+  //   value: totalStaked,
+  // }));
   const { address: user } = useAccount();
-  const allUsersOwned = useAppSelector((state) =>
-    selectOwnersSortedByControl(state, user)
-  );
-  const allUsersStaked = useAppSelector((state) =>
-    selectOwnersSortedByStake(state, user)
-  );
-  const dataByPixels = allUsersOwned.map(({ owner, count }) => ({
-    user: owner,
-    value: count,
-  }));
-  const dataByStaked = allUsersStaked.map(({ owner, totalStaked }) => ({
-    user: owner,
-    value: totalStaked,
-  }));
-
+  const owned = useAppSelector((state) => selectControlOfOwner(state, user));
+  const staked = useAppSelector((state) => selectUsedOfOwner(state, user));
+  const moves = useAppSelector((state) => selectPixelEventsOfUser(state, user));
+  const score = calculateScore(owned, staked, moves);
   const [open, setOpen] = useState(false);
-  const [segment, setSegment] = useState<"pixels" | "staked">("pixels");
+  const [segment, setSegment] = useState<"first" | "second">("first");
 
-  const currentData = () =>
-    segment === "pixels" ? dataByPixels : dataByStaked;
+  const dataByScore = [
+    { user: "me", value: score },
+    { user: "Pepe", value: 1292 },
+    { user: "Giorgeow", value: 434 },
+    // ...
+  ];
+  const dataByPixels = [
+    { user: "me", value: owned },
+    { user: "Pepe", value: 2 },
+    { user: "Giorgeow", value: 1 },
+    // ...
+  ];
+
+  const currentData = () => {
+    switch (segment) {
+      case "first":
+        return dataByScore;
+      case "second":
+        return dataByPixels;
+    }
+  };
 
   return (
     <div className={`leaderboard-menu ${open ? "open" : ""}`}>
@@ -50,16 +73,16 @@ const LeaderboardMenu: React.FC<LeaderboardMenuProps> = () => {
           onIonChange={(e) => setSegment(e.detail.value as any)}
         >
           <IonSegmentButton
-            value="pixels"
-            className={segment === "pixels" ? "selected" : ""}
+            value="first"
+            className={segment === "first" ? "selected" : ""}
           >
-            <IonLabel>Pixels</IonLabel>
+            <IonLabel>Score</IonLabel>
           </IonSegmentButton>
           <IonSegmentButton
-            value="staked"
-            className={segment === "staked" ? "selected" : ""}
+            value="second"
+            className={segment === "second" ? "selected" : ""}
           >
-            <IonLabel>Staked</IonLabel>
+            <IonLabel>Pixels</IonLabel>
           </IonSegmentButton>
         </IonSegment>
 
@@ -68,7 +91,9 @@ const LeaderboardMenu: React.FC<LeaderboardMenuProps> = () => {
             <li
               key={idx}
               className={
-                item.user.toLowerCase() === user?.toLowerCase()
+                // highlight if it's your real address *or* the "me" placeholder
+                item.user === "me" ||
+                item.user?.toLowerCase() === user?.toLowerCase()
                   ? "highlighted"
                   : ""
               }
