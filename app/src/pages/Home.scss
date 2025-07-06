@@ -6,9 +6,11 @@ ion-toolbar {
   --min-height: 64px;
   --background: var(--background-color-light);
   #toolbar {
+    width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: space-around;
 
     .logo {
       display: flex;
@@ -22,6 +24,34 @@ ion-toolbar {
         font-size: 1.6rem;
         span {
           color: var(--ion-color-primary);
+        }
+      }
+    }
+
+    #scores-container {
+      display: flex;
+      justify-content: space-around;
+
+      .score-input {
+        box-sizing: border-box;
+        height: fit-content;
+        width: fit-content;
+        font-size: 0.7rem;
+        display: flex;
+        justify-content: space-between;
+        margin-left: 16px;
+        padding: 8px 16px;
+        background-color: var(--background-color-dark);
+        border-radius: 50px;
+        p:first-of-type {
+          margin-right: 4px;
+        }
+        p:last-of-type {
+          color: yellow;
+        }
+        p {
+          margin: auto;
+          padding: auto;
         }
       }
     }

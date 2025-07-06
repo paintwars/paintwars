@@ -43,6 +43,7 @@ import "./theme/variables.scss";
 
 import { Providers } from "./providers";
 import UserToolbar from "$features/user/UserToolbar/UserToolbar";
+import ToolbarContent from "$features/ToolbarContent";
 // import UserToolbar from "$features/user/UserToolbar/UserToolbar";
 // import MintButton from "$features/shared/MintButton";
 
@@ -56,13 +57,7 @@ const App: React.FC = () => (
           <IonButtons slot="start">
             <IonMenuButton color="primary" />
           </IonButtons>
-          <div id="toolbar">
-            <div className="logo hide-md">
-              <div id="logo-text">
-                <span>paintwars</span>
-              </div>
-            </div>
-          </div>
+          <ToolbarContent />
           <IonButtons slot="end">
             {/* <MintButton /> */}
             <UserToolbar />

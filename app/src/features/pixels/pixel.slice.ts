@@ -54,15 +54,21 @@ export const selectTVL = createSelector(selectAllPixels, (pixels) =>
 );
 
 export const selectControlOfOwner = createSelector(
-  [selectAllPixels, (state, owner: string) => owner],
-  (pixels, owner): number => pixels.filter((p) => p.owner == owner).length
+  [selectAllPixels, (state, owner: string | undefined) => owner],
+  (pixels, owner): number => {
+    if (!owner) return 0;
+    else return pixels.filter((p) => p.owner == owner).length;
+  }
 );
 export const selectUsedOfOwner = createSelector(
-  [selectAllPixels, (state, owner: string) => owner],
-  (pixels, owner): number =>
-    pixels
-      .filter((p) => p.owner == owner)
-      .reduce((sum, pixel) => sum + (pixel.stakeAmount || 0), 0)
+  [selectAllPixels, (state, owner: string | undefined) => owner],
+  (pixels, owner): number => {
+    if (!owner) return 0;
+    else
+      return pixels
+        .filter((p) => p.owner == owner)
+        .reduce((sum, pixel) => sum + (pixel.stakeAmount || 0), 0);
+  }
 );
 
 type InitialState = {

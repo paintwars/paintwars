@@ -30,6 +30,7 @@ import "./Home.scss";
 // import SmallEndMenu from "$features/shared/EndMenu/SmallEndMenu";
 import { MenuProvider } from "$features/shared/EndMenu/useMenuContext";
 import EndMenu from "$features/shared/EndMenu/EndMenu";
+import Leaderboard from "$features/shared/Leaderboard/Leaderboard";
 
 const contentId = "main-content";
 const menuId = "end-menu";
@@ -46,6 +47,7 @@ const Home: React.FC = () => {
     <MenuProvider>
       <IonSplitPane contentId={contentId} when="xl">
         <EndMenu contentId={contentId} menuId={menuId} />
+        <Leaderboard />
         <IonContent fullscreen id={contentId}>
           {/* <SmallEndMenu menuId={menuId} contentId={contentId} /> */}
           <IonTabs>
