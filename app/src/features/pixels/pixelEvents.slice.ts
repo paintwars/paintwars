@@ -96,6 +96,17 @@ export const selectPixelEventsOfPixel = createSelector(
   }
 );
 
+export const selectPixelEventsOfUser = createSelector(
+  [
+    selectAllPixelEvents,
+    (_state: RootState, owner: string | undefined) => owner?.toLowerCase(),
+  ],
+  (pixelEvents, owner) => {
+    if (!owner) return 0;
+    return pixelEvents.filter((event) => event.owner === owner).length;
+  }
+);
+
 type InitialState = {
   status: "loading" | "success" | "error" | "idle";
   [key: string]: boolean | string;

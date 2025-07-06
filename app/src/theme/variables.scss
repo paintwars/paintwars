@@ -129,12 +129,16 @@ $breakpoints: (
 
 ion-button {
   text-transform: none;
+
+  ion-icon {
+    color: var(--color-primary);
+  }
 }
 
 ion-popover {
   ion-item {
-    --color: var(--color-secondary);
-    color: var(--color-secondary);
+    --color: white;
+    color: white;
     &:hover {
       --color: var(--color-dark);
       color: var(--color-dark);

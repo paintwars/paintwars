@@ -54,20 +54,44 @@ export const selectTVL = createSelector(selectAllPixels, (pixels) =>
 );
 
 export const selectControlOfOwner = createSelector(
-  [selectAllPixels, (state, owner: string | undefined) => owner],
+  [selectAllPixels, (state, owner: string | undefined) => owner?.toLowerCase()],
   (pixels, owner): number => {
     if (!owner) return 0;
     else return pixels.filter((p) => p.owner == owner).length;
   }
 );
 export const selectUsedOfOwner = createSelector(
-  [selectAllPixels, (state, owner: string | undefined) => owner],
+  [selectAllPixels, (state, owner: string | undefined) => owner?.toLowerCase()],
   (pixels, owner): number => {
     if (!owner) return 0;
     else
       return pixels
         .filter((p) => p.owner == owner)
         .reduce((sum, pixel) => sum + (pixel.stakeAmount || 0), 0);
+  }
+);
+
+/**
+ * Utility to derive a leaderboard array sorted by control count descending
+ */
+export const selectOwnersSortedByControl = createSelector(
+  selectControlOfOwner,
+  (controlMap) => {
+    return Object.entries(controlMap)
+      .map(([owner, count]) => ({ owner, count }))
+      .sort((a, b) => b.count - a.count);
+  }
+);
+
+/**
+ * Utility to derive a leaderboard array sorted by staked amount descending
+ */
+export const selectOwnersSortedByStake = createSelector(
+  selectUsedOfOwner,
+  (stakeMap) => {
+    return Object.entries(stakeMap)
+      .map(([owner, totalStaked]) => ({ owner, totalStaked }))
+      .sort((a, b) => b.totalStaked - a.totalStaked);
   }
 );
 
